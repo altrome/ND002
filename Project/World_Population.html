@@ -1,0 +1,273 @@
+<!-- 
+	http://www.nytimes.com/interactive/2013/03/29/sports/baseball/Strikeouts-Are-Still-Soaring.html?ref=baseball 
+	http://fiddle.jshell.net/4xZwb/4/
+	
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+      <style>
+	    @import url(https://fonts.googleapis.com/css?family=Lato:400,300);
+        body {
+	      font-family: Lato;
+        }
+        h2 {
+          color: black;
+          text-align: center;
+        }
+
+        .axis {
+          font-size: 0.6em;
+          font-weight: 300;
+        }
+
+        path {
+          fill: none;
+          stroke: black;
+          stroke-width: 2px;
+        }
+
+        .tick {
+          fill: none;
+          stroke: black;
+        }
+
+        circle {
+          opacity: 0.4;
+          stroke: none;
+        }
+
+        .line_plot {
+          fill: none;
+          stroke: #4eb0bb;
+          stroke-width: 1px;
+        }
+        
+        g.axis line, g.axis path{
+		    shape-rendering:crispEdges;
+		    fill:none; 
+		    stroke:black;
+		}
+		g.x.axis g.tick text {
+		    opacity:0;
+		}
+		g.x.axis g.tick:nth-of-type(5n+1) text{
+		    opacity:1;
+		}
+		g.plot line {
+		    stroke-width:1;
+		    marker-start:url(#point);
+		}
+		
+		path.line {
+		    stroke-width:1;
+		    marker-start:url(#point);
+		}
+      </style>
+
+    <script type="text/javascript">
+	format = d3.time.format("%Y");
+	
+	function draw(data) {
+
+		"use strict";
+		var margin = 75,
+			width = 1200 - margin,
+			height = 600 - margin;
+
+		var radius = 2;
+
+		d3.select("body")
+			.append("h2")
+			.text("World Population");
+
+		var svg = d3.select("body")
+			.append("svg")
+			.attr("width", width + margin)
+			.attr("height", height + margin)
+		
+        var x_extent = d3.extent(data, function(d) {
+            return d['Year'];
+        });
+
+        var x_scale = d3.time.scale()
+            .range([margin, width])
+            .domain(x_extent);
+
+        var y_extent = d3.extent(data, function(d) {
+            return d['Population'];
+        });
+
+        var y_scale = d3.scale.log()
+            .range([height, margin])
+            .domain(y_extent);
+
+        var x_axis = d3.svg.axis()
+            .scale(x_scale)
+            .ticks(d3.time.years, 10);
+
+        d3.select("svg")
+            .append('g')
+            .attr('class', 'x axis')
+            .attr('transform', "translate(0," + height + ")")
+            .call(x_axis);
+
+        var y_axis = d3.svg.axis()
+            .scale(y_scale)
+            .orient("left");
+
+		d3.select("svg")
+			.append('g')
+			.attr('class', 'y axis')
+			.attr('transform', "translate(" + margin + ",0)")
+			.call(y_axis);
+
+/*
+		d3.select('svg')
+			.append("g")
+			.attr("class", "plot")
+			.selectAll("line")
+			.data(data)
+			.enter()
+			.append("line")
+			.select(function(d,i) { 
+				return ( i+1 in data ) ? d['Country'] !== data[i+1]['Country'] ? null : this : null; 
+			})
+			.attr("x1", function(d,i) { 
+				return x_scale(d['Year']); 
+			})
+		    .attr("x2", function(d,i) {
+		        return x_scale( (i+1 == data.length)? d['Year']:data[i+1]['Year']);
+		    })
+		    .attr("y1", function(d,i) {
+			    return y_scale(d['Population']);
+			})
+		    .attr("y2", function(d,i) {
+		        return y_scale( (i+1 == data.length)? d['Population']:data[i+1]['Population']);
+		    })
+		    .style("stroke", "grey" )
+		    .attr("country", function(d,i) {return d['Country']})
+		    .attr("year", function(d,i) {return d['Year']});
+*/
+		
+		function agg_country(leaves) {
+
+                var yearPopulation = [];
+
+                leaves.forEach(function(d) {
+					yearPopulation.push({"year": d['Year'], "population":+d['Population']})
+                });
+
+                return {
+                  'yearPopulation' : yearPopulation
+                };
+            }
+            
+        var countries = d3.nest()
+           .key(function(d) {
+              return d['Country'];
+           })
+           .rollup(agg_country)
+           .entries(data);
+		
+		var country = svg.selectAll(".country")
+			.data(countries)
+		    .enter()
+		    .append("g")
+		    .attr("class", "country")
+		    .attr("id", function(d) {return d.key; });
+		
+		var line = d3.svg.line()
+		    .interpolate("basis")
+		    .x(function(d) { return x_scale(d.year); })
+		    .y(function(d) { return y_scale(d.population); });  
+		
+		country.append("path")	
+			.attr("class", "line")
+			.attr("d", function(d) {return line(d.values.yearPopulation); })
+		    .style("stroke", "grey" );
+			
+/*
+		svg.append("path")
+		    .attr("class", "line")
+		    .attr("clip-path", "url(#clip)")
+		    .data([data])
+		    .attr("d", line)
+		    .style("stroke", "grey" );
+*/
+
+/*
+		d3.select('svg')
+			.selectAll("circle")
+			.data(data)
+			.enter()
+			.append("circle")
+		
+		d3.selectAll('circle')
+			.attr('cx', function(d) {
+				return x_scale(d['Year']);
+			})
+			.attr('cy', function(d) {
+				return y_scale(d['Population']);
+			})
+			.attr('r',  radius)
+			.attr('fill', 'grey');
+*/
+		
+/*
+		var legend = svg.append("g")
+			.attr("class", "legend")
+			.attr("transform", "translate(" + (width - 100) + "," + 20 + ")")
+			.selectAll("g")
+			.data(["Home Team", "Others"])
+			.enter().append("g");
+
+		legend.append("circle")
+			.attr("cy", function(d, i) {
+				return i * 30;
+			})
+			.attr("r", function(d) {
+				if (d == "Home Team") {
+					return radius * multiplier;
+				} else {
+					return radius;
+				}
+			})
+			.attr("fill", function(d) {
+				if (d == "Home Team") {
+					return 'red';
+				} else {
+					return 'blue';
+				}
+			});
+
+		legend.append("text")
+			.attr("y", function(d, i) {
+				return i * 30 + 5;
+			})
+			.attr("x", radius * 5)
+			.text(function(d) {
+				return d;
+			});
+*/
+
+      };
+    </script>
+  </head>
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 (not dimple.js) to load the TSV file
+    and pass the contents of it to the draw function
+    */
+	d3.csv("World_population.tsv", function(d) {
+		d['Population'] = +d["Population"];
+		d['Year'] = format.parse(d['Year']);
+		return d;
+	}, draw);
+  </script>
+</body>
+</html>
