@@ -9,6 +9,7 @@
     <meta charset="utf-8">
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+    <script src="countries.js"></script>
       <style>
 	    @import url(https://fonts.googleapis.com/css?family=Lato:400,300);
         body {
@@ -72,7 +73,6 @@
 	format = d3.time.format("%Y");
 	
 	function draw(data) {
-
 		"use strict";
 		var margin = 75,
 			width = 1200 - margin,
@@ -156,13 +156,16 @@
 		function agg_country(leaves) {
 
                 var yearPopulation = [];
+                var identifier;
 
                 leaves.forEach(function(d) {
-					yearPopulation.push({"year": d['Year'], "population":+d['Population']})
+					yearPopulation.push({"year": d['Year'], "population":+d['Population']});
+					identifier = d['identifier']
                 });
 
                 return {
-                  'yearPopulation' : yearPopulation
+	                'id': identifier,
+                	'yearPopulation' : yearPopulation
                 };
             }
             
@@ -178,7 +181,7 @@
 		    .enter()
 		    .append("g")
 		    .attr("class", "country")
-		    .attr("id", function(d) {return d.key; });
+		    .attr("id", function(d) {return d.values.id; });
 		
 		var line = d3.svg.line()
 		    .interpolate("basis")
@@ -264,8 +267,10 @@
     and pass the contents of it to the draw function
     */
 	d3.csv("World_population.tsv", function(d) {
+
 		d['Population'] = +d["Population"];
 		d['Year'] = format.parse(d['Year']);
+		
 		return d;
 	}, draw);
   </script>
