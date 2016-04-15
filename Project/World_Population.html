@@ -3,6 +3,7 @@
 	http://fiddle.jshell.net/4xZwb/4/
 	https://gist.github.com/phil-pedruco/10447085
 	http://stackoverflow.com/questions/14167863/how-can-i-bring-a-circle-to-the-front-with-d3
+	http://www.huffingtonpost.es/ansgar-seyfferth/la-poblacion-mundial-crec_b_9605508.html?ncid=tweetlnkeshpmg00000001
 -->
 <!DOCTYPE html>
 <html>
@@ -124,6 +125,7 @@
         });
 
         var y_scale = d3.scale.log()
+        //var y_scale = d3.scale.linear()
             .range([height + 40, 0])
             .domain(y_extent);
 
@@ -190,7 +192,32 @@
 			.attr("class", "line")
 			.attr("d", function(d) {return line(d.values.yearPopulation); })
 		    .style("stroke", "grey" );
-		    
+		   
+		var avgYear = d3.nest()
+			.key(function(d) { 
+				return d['Year']; 
+			})
+			.rollup(function(v) { 
+				return d3.mean(v, function(d) { 
+					return +d['Population'];
+				}); 
+			})
+			.entries(data);
+		
+		var avgLine = d3.svg.line()
+		    .interpolate("basis")
+		    .x(function(d) { return x_scale(new Date(d['key'])); })
+		    .y(function(d) { return y_scale(d['values']); }); 
+		
+		d3.select("svg")
+            .append("g")
+            .attr("class", "avgLine")
+			.append("path")
+		    .attr("class", "linePath")
+			.attr("d", avgLine(avgYear))
+		    .style("stroke", "blue" );
+		
+		
 /*
 		country.append("g")
 			.attr("class", "points")
