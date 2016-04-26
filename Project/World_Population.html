@@ -159,9 +159,11 @@
 			.attr('transform', "translate(" + margin + ",0)")
 			.call(y_axis);
 		
+/*
 		var lines = d3.select("svg")
             .append('g')
             .attr('class', 'lines')
+*/
 		
 		function agg_country(country) {
 
@@ -192,7 +194,7 @@
            .rollup(agg_country)
            .entries(data);
 		
-		var country = lines.selectAll(".country")
+		var country = d3.select("svg").selectAll(".country")
 			.data(countries)
 		    .enter()
 		    .append("g")
@@ -233,37 +235,8 @@
 		    .attr("class", "linePath")
 			.attr("d", avgLine(avgYear))
 		    .style("stroke", "blue" );
-/*
-		country.append("g")
-			.attr("class", "points")
-			.selectAll("circle")
-			.data(countries)
-			.enter()
-			.append("circle")
-			.attr('cx', function(d) { debugger; return x_scale(d.values.yearPopulation.year); })
-			.attr('cy', function(d) { return y_scale(d.values.yearPopulation.population); })
-			.attr('r', 2)
-			.attr('fill', 'grey');
-*/
 			
-			
-/*
-		d3.select('svg')
-			.selectAll("circle")
-			.data(data)
-			.enter()
-			.append("circle")
-		
-		d3.selectAll('circle')
-			.attr('cx', function(d) {
-				return x_scale(d['Year']);
-			})
-			.attr('cy', function(d) {
-				return y_scale(d['Population']);
-			})
-			.attr('r',  radius)
-			.attr('fill', 'grey');
-*/
+		//d3.select(".lines").moveToBack();
 	}
 	
 	function draw(geo_data) {
@@ -306,63 +279,65 @@
 			.style('fill', '#ecf0f1')
 			.style('stroke', '#2c3e50')
 			.style('stroke-width', 0.5)
-			.style('opacity', 1)
-			.call(mapToFront);
-		
+			.style('fill-opacity', 0);
+					
 		map.on("mouseover", function(){
             //console.log(this);
             
+			//d3.select(".map").moveToBack();
             
             d3.select(this)
+            	.moveToFront()
                 .transition()
                 .duration(500)
                 .style('fill', "#9b59b6")
-                .style('opacity', 0.8)
-                .style("stroke", "#3498db")
-                .call(mapToFront);  
-                         
+                .style('fill-opacity', 0.8)
+                .style("stroke", "#3498db");  
+                    
 
 			var selection = this.getAttribute("class");
 
 			d3.select('#' + selection)
+				.moveToFront()
 				.select('path')
 				.transition()
                 .duration(500)
 				.style('stroke', 'red')
                 .style('stroke-width', 2)
-                .style('opacity', 0.7)
-				.moveToFront();
+                .style('opacity', 0.7);
+                
 		});
 		
 		map.on("mouseout", function(){
+			
+			d3.select(".map").moveToFront();
 
-			 d3.select(this)
+			d3.select(this)
+				.moveToBack()
                 .transition()
                 .duration(500)
 				.style('fill', '#ecf0f1')
 				.style('stroke', '#2c3e50')
 				.style('stroke-width', 0.5)
-				.style('opacity', 1)
-				.call(mapToFront);
+				.style('fill-opacity', 0);
             
             var selection = this.getAttribute("class");
             
             d3.select('#' + selection)
+            	.moveToBack()
 				.select('path')
 				.transition()
                 .duration(500)
             	.style('stroke', 'grey')
             	.style('opacity', 0.2)
             	.style('stroke-width', 1);
+            
+            d3.select('#' + selection).moveToBack();
+           
 		});
 
     };
-    
-    function mapToFront() {
-	    d3.select(".map").moveToFront();
-    };
-	
-    
+
     
     </script>
   </head>
