@@ -233,8 +233,6 @@
 		    .attr("class", "linePath")
 			.attr("d", avgLine(avgYear))
 		    .style("stroke", "blue" );
-		
-		
 /*
 		country.append("g")
 			.attr("class", "points")
@@ -291,17 +289,6 @@
 		
 		var path = d3.geo.path().projection(projection);
 		
-		map = svg.selectAll('path')
-				 .data(geo_data.features)
-				 .enter()
-				 .append('path')
-				 .attr('d', path)
-				 .style('fill', 'grey')
-				 .style('stroke', 'black')
-				 .style('stroke-width', 0.5)
-				 .style('opacity', 0.3)
-				 .attr("class",function(d){ return d.id});
-		
 		d3.tsv("World_population.tsv", function(d) {
 
 			d['Population'] = +d["Population"];
@@ -309,16 +296,31 @@
 			
 			return d;
 		}, plotLines);
-
+		
+		map = svg.selectAll('path')
+			.data(geo_data.features)
+			.enter()
+			.append('path')
+			.attr('d', path)
+			.attr("class",function(d){ return d.id})
+			.style('fill', '#ecf0f1')
+			.style('stroke', '#2c3e50')
+			.style('stroke-width', 0.5)
+			.style('opacity', 1)
+			.call(mapToFront);
 		
 		map.on("mouseover", function(){
-                
+            //console.log(this);
+            
+            
             d3.select(this)
                 .transition()
                 .duration(500)
-                .style('fill', "lightBlue")
+                .style('fill', "#9b59b6")
                 .style('opacity', 0.8)
-                .style("stroke", "red");
+                .style("stroke", "#3498db")
+                .call(mapToFront);  
+                         
 
 			var selection = this.getAttribute("class");
 
@@ -328,7 +330,8 @@
                 .duration(500)
 				.style('stroke', 'red')
                 .style('stroke-width', 2)
-                .style('opacity', 0.7);
+                .style('opacity', 0.7)
+				.moveToFront();
 		});
 		
 		map.on("mouseout", function(){
@@ -336,10 +339,11 @@
 			 d3.select(this)
                 .transition()
                 .duration(500)
-				.style('fill', 'grey')
-				.style('opacity', 0.3)
-                .style('stroke', 'black')
-                .style('stroke-width', 0.5);
+				.style('fill', '#ecf0f1')
+				.style('stroke', '#2c3e50')
+				.style('stroke-width', 0.5)
+				.style('opacity', 1)
+				.call(mapToFront);
             
             var selection = this.getAttribute("class");
             
@@ -351,26 +355,15 @@
             	.style('opacity', 0.2)
             	.style('stroke-width', 1);
 		});
-		map.parentNode.appendChild(map);
+
     };
     
+    function mapToFront() {
+	    d3.select(".map").moveToFront();
+    };
+	
     
     
-    function rescaleY(idCountry) {
-			
-        y_scale.domain([0,maxPopulation])  // change scale to 0, to between 10 and 100
-        d3.select(".y")
-            .transition().duration(1500).ease("sin-in-out")  // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
-            .call(y_axis);  
-    }
-    
-    function rescaleX(year) {
-			
-        x_scale.domain([1800,year])  // change scale to 0, to between 10 and 100
-        d3.select(".x")
-            .transition().duration(1500).ease("sin-in-out")  // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
-            .call(x_axis);  
-    }
     </script>
   </head>
 <body>
