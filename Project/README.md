@@ -1,13 +1,16 @@
-# Worlkd Population Evolution Visualization
+# World Population Evolution Visualization
 ### Data Visualization with D3 - Udacity's Data Analyst Nanodegree
+
+Direct link to the visualization (bl.ocks.org)[http://bl.ocks.org/altrome/raw/ae6d6aa352f08ea339300cd38f5a8c9d/]
 
 ## Summary
 
-This project wants to show, in a visual and easy to understand way, how the world population has evolved since 1800. The dataset used, was extracted from gapminder's data repository (link)[https://docs.google.com/spreadsheets/d/1IbDM8z5XicMIXgr93FPwjgwoTTKMuyLfzU6cQrGZzH8/pub?gid=0].
+This project wants to show, in a visual and easy to understand way, how the world population has evolved since 1800. The dataset used, was extracted from gapminder's data repository [link](https://docs.google.com/spreadsheets/d/1IbDM8z5XicMIXgr93FPwjgwoTTKMuyLfzU6cQrGZzH8/pub?gid=0).
 
 The process followed to deal with the dataset was:
+
 1. I was exploring the CSV file with common tools like excel, to understand its structure and see if it was possible to add more information to enrich the visualization. 
-2. I found that each line of the dataset, was referenced to the official name of the country, and I regarded that work with names, in some cases with spaces, would be a problem, so I started to find a way to work with some standard references, and I found that ISO maintains a list of ISO codes with 2 or 3 letters and 3 numbers (link)[https://en.wikipedia.org/wiki/List_of_sovereign_states_and_dependent_territories_by_continent_(data_file)], so I decided to export these codes and merge with the original file. 
+2. I found that each line of the dataset, was referenced to the official name of the country, and I regarded that work with names, in some cases with spaces, would be a problem, so I started to find a way to work with some standard references, and I found that ISO maintains a list of ISO codes with 2 or 3 letters and 3 numbers [link](https://en.wikipedia.org/wiki/List_of_sovereign_states_and_dependent_territories_by_continent_(data_file)), so I decided to export these codes and merge with the original file. 
 3. Working with R, the file was cleaned and reworked to meet the specifications I determined previously. The files with the R code and the original files exported from excel can be found at 'R_stuf' folder.
 4. Once the file was completely defined, I decided to think how to show the information to the user in an attractive way and trying to put some gamification in the experience.
 
@@ -15,7 +18,7 @@ The overall process for explore and clean the data took me about 30 hours since 
 
 ## Design
 
-This project was motivated by a post published at the Spanish version of "The Huffington Post" (link)[http://www.huffingtonpost.es/ansgar-seyfferth/la-poblacion-mundial-crec_b_9605508.html?ncid=tweetlnkeshpmg00000001] that, despite being well documented, I think that an interactive visualization would improve the user engagement and compress the information shown to the user at the same time. The final design is structured in three main blocks:
+This project was motivated by a post published at the Spanish version of "The Huffington Post" [link](http://www.huffingtonpost.es/ansgar-seyfferth/la-poblacion-mundial-crec_b_9605508.html?ncid=tweetlnkeshpmg00000001) that, despite being well documented, I think that an interactive visualization would improve the user engagement and compress the information shown to the user at the same time. The final design is structured in three main blocks:
 
 1. Short presentation of the visualization, explaining the most important insights of the data to guide the user
 2. A big world map used to let the user move the mouse over the countries and see their Population evolution line highlighted 
