@@ -9,7 +9,7 @@ This project wants to show, in a visual and easy to understand way, how the worl
 
 The process followed to deal with the dataset was:
 
-1. I was exploring the CSV file with common tools like excel, to understand its structure and see if it was possible to add more information to enrich the visualization. 
+1. Explore the CSV file with common tools like excel, to understand its structure and see if it was possible to add more information to enrich the visualization. 
 2. I found that each line of the dataset, was referenced to the official name of the country, and I regarded that work with names, in some cases with spaces, would be a problem, so I started to find a way to work with some standard references, and I found that ISO maintains a list of ISO codes with 2 or 3 letters and 3 numbers [link](https://en.wikipedia.org/wiki/List_of_sovereign_states_and_dependent_territories_by_continent_(data_file)), so I decided to export these codes and merge with the original file. 
 3. Working with R, the file was cleaned and reworked to meet the specifications I determined previously. The files with the R code and the original files exported from excel can be found at 'R_stuf' folder.
 4. Once the file was completely defined, I decided to think how to show the information to the user in an attractive way and trying to put some gamification in the experience.
@@ -31,6 +31,12 @@ Once the visualization was done, I started with the user interaction, and some p
 The final design took me about 30 hours, 15 of them, were used to solve interaction problems.
 
 ## Feedback
+
+Some online and offline users gave me some feedback that I used to improve my design in some cases, and in other cases I was not able to implement the provided ideas. Here is a list of them and the action done:
+
+* "Looks good, but there is an strange behavior when moving the mouse over a country with line over it." - As I mentioned above, this was one of the main challenges, because of the order of the SVG elements in the chart. Finally I solved it.
+* "Can the y-axis update itself when you choose a country such that the y-max value is lowered for smaller populations?" - Good idea, but After search a lot, I was not able to implement it... I'll continue searching
+* "Would be cool if you could pick two or more countries at the same time to compare the populations." - True... but the main objective of the visualization is to show one country evolution and not to compare one with another, but I'll try to test it.
 
 ## Resources
 
