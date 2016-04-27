@@ -1,0 +1,177 @@
+Name;ISO3166-2;ISO3166-3;ISO3166-N;Continent;ContinentCode
+Afghanistan;AF;AFG;004;Asia;AS
+Albania;AL;ALB;008;Europe;EU
+Algeria;DZ;DZA;012;Africa;AF
+Angola;AO;AGO;024;Africa;AF
+Antarctica;AQ;ATA;010;Antarctica;AN
+Argentina;AR;ARG;032;South America;SA
+Armenia;AM;ARM;051;Europe;EU
+Australia;AU;AUS;036;Oceania;OC
+Austria;AT;AUT;040;Europe;EU
+Azerbaijan;AZ;AZE;031;Europe;EU
+Bangladesh;BD;BGD;050;Asia;AS
+Belarus;BY;BLR;112;Europe;EU
+Belgium;BE;BEL;056;Europe;EU
+Belize;BZ;BLZ;084;North America;NA
+Benin;BJ;BEN;204;Africa;AF
+Bermuda;BM;BMU;060;North America;NA
+Bhutan;BT;BTN;064;Asia;AS
+Bolivia;BO;BOL;068;South America;SA
+Bosnia and Herzegovina;BA;BIH;070;Europe;EU
+Botswana;BW;BWA;072;Africa;AF
+Brazil;BR;BRA;076;South America;SA
+Brunei;BN;BRN;096;Asia;AS
+Bulgaria;BG;BGR;100;Europe;EU
+Burkina Faso;BF;BFA;854;Africa;AF
+Burundi;BI;BDI;108;Africa;AF
+Cambodia;KH;KHM;116;Asia;AS
+Cameroon;CM;CMR;120;Africa;AF
+Canada;CA;CAN;124;North America;NA
+Central African Republic;CF;CAF;140;Africa;AF
+Chad;TD;TCD;148;Africa;AF
+Chile;CL;CHL;152;South America;SA
+China;CN;CHN;156;Asia;AS
+Colombia;CO;COL;170;South America;SA
+Costa Rica;CR;CRI;188;North America;NA
+Croatia;HR;HRV;191;Europe;EU
+Cuba;CU;CUB;192;North America;NA
+Cyprus;CY;CYP;196;Europe;EU
+Czech Republic;CZ;CZE;203;Europe;EU
+Democratic Republic of the Congo;CD;COD;180;Africa;AF
+Denmark;DK;DNK;208;Europe;EU
+Djibouti;DJ;DJI;262;Africa;AF
+Dominican Republic;DO;DOM;214;North America;NA
+East Timor;TL;TLS;626;Asia;AS
+Ecuador;EC;ECU;218;South America;SA
+Egypt;EG;EGY;818;Africa;AF
+El Salvador;SV;SLV;222;North America;NA
+Equatorial Guinea;GQ;GNQ;226;Africa;AF
+Eritrea;ER;ERI;232;Africa;AF
+Estonia;EE;EST;233;Europe;EU
+Ethiopia;ET;ETH;231;Africa;AF
+Falkland Islands;FK;FLK;238;South America;SA
+Fiji;FJ;FJI;242;Oceania;OC
+Finland;FI;FIN;246;Europe;EU
+France;FR;FRA;250;Europe;EU
+French Guiana;GF;GUF;254;South America;SA
+French Southern and Antarctic Lands;TF;ATF;260;Antarctica;AN
+Gabon;GA;GAB;266;Africa;AF
+Gambia;GM;GMB;270;Africa;AF
+Georgia;GE;GEO;268;Europe;EU
+Germany;DE;DEU;276;Europe;EU
+Ghana;GH;GHA;288;Africa;AF
+Greece;GR;GRC;300;Europe;EU
+Greenland;GL;GRL;304;North America;NA
+Guatemala;GT;GTM;320;North America;NA
+Guinea;GN;GIN;324;Africa;AF
+Guinea Bissau;GW;GNB;624;Africa;AF
+Guyana;GY;GUY;328;South America;SA
+Haiti;HT;HTI;332;North America;NA
+Honduras;HN;HND;340;North America;NA
+Hungary;HU;HUN;348;Europe;EU
+Iceland;IS;ISL;352;Europe;EU
+India;IN;IND;356;Asia;AS
+Indonesia;ID;IDN;360;Asia;AS
+Iran;IR;IRN;364;Asia;AS
+Iraq;IQ;IRQ;368;Asia;AS
+Ireland;IE;IRL;372;Europe;EU
+Israel;IL;ISR;376;Asia;AS
+Italy;IT;ITA;380;Europe;EU
+Ivory Coast;CI;CIV;384;Africa;AF
+Jamaica;JM;JAM;388;North America;NA
+Japan;JP;JPN;392;Asia;AS
+Jordan;JO;JOR;400;Asia;AS
+Kazakhstan;KZ;KAZ;398;Europe;EU
+Kenya;KE;KEN;404;Africa;AF
+Kuwait;KW;KWT;414;Asia;AS
+Kyrgyzstan;KG;KGZ;417;Asia;AS
+Laos;LA;LAO;418;Asia;AS
+Latvia;LV;LVA;428;Europe;EU
+Lebanon;LB;LBN;422;Asia;AS
+Lesotho;LS;LSO;426;Africa;AF
+Liberia;LR;LBR;430;Africa;AF
+Libya;LY;LBY;434;Africa;AF
+Lithuania;LT;LTU;440;Europe;EU
+Luxembourg;LU;LUX;442;Europe;EU
+Macedonia;MK;MKD;807;Europe;EU
+Madagascar;MG;MDG;450;Africa;AF
+Malawi;MW;MWI;454;Africa;AF
+Malaysia;MY;MYS;458;Asia;AS
+Mali;ML;MLI;466;Africa;AF
+Malta;MT;MLT;470;Europe;EU
+Mauritania;MR;MRT;478;Africa;AF
+Mexico;MX;MEX;484;North America;NA
+Moldova;MD;MDA;498;Europe;EU
+Mongolia;MN;MNG;496;Asia;AS
+Montenegro;ME;MNE;499;Europe;EU
+Morocco;MA;MAR;504;Africa;AF
+Mozambique;MZ;MOZ;508;Africa;AF
+Myanmar;MM;MMR;104;Asia;AS
+Namibia;NA;NAM;516;Africa;AF
+Nepal;NP;NPL;524;Asia;AS
+Netherlands;NL;NLD;528;Europe;EU
+New Caledonia;NC;NCL;540;Oceania;OC
+New Zealand;NZ;NZL;554;Oceania;OC
+Nicaragua;NI;NIC;558;North America;NA
+Niger;NE;NER;562;Africa;AF
+Nigeria;NG;NGA;566;Africa;AF
+North Korea;KP;PRK;408;Asia;AS
+Norway;NO;NOR;578;Europe;EU
+Oman;OM;OMN;512;Asia;AS
+Pakistan;PK;PAK;586;Asia;AS
+Panama;PA;PAN;591;North America;NA
+Papua New Guinea;PG;PNG;598;Oceania;OC
+Paraguay;PY;PRY;600;South America;SA
+Peru;PE;PER;604;South America;SA
+Philippines;PH;PHL;608;Asia;AS
+Poland;PL;POL;616;Europe;EU
+Portugal;PT;PRT;620;Europe;EU
+Puerto Rico;PR;PRI;630;North America;NA
+Qatar;QA;QAT;634;Asia;AS
+Republic of Serbia;RS;SRB;688;Europe;EU
+Republic of the Congo;CG;COG;178;Africa;AF
+Romania;RO;ROU;642;Europe;EU
+Russia;RU;RUS;643;Europe;EU
+Rwanda;RW;RWA;646;Africa;AF
+Saudi Arabia;SA;SAU;682;Asia;AS
+Senegal;SN;SEN;686;Africa;AF
+Sierra Leone;SL;SLE;694;Africa;AF
+Slovakia;SK;SVK;703;Europe;EU
+Slovenia;SI;SVN;705;Europe;EU
+Solomon Islands;SB;SLB;090;Oceania;OC
+Somalia;SO;SOM;706;Africa;AF
+South Africa;ZA;ZAF;710;Africa;AF
+South Korea;KR;KOR;410;Asia;AS
+Spain;ES;ESP;724;Europe;EU
+Sri Lanka;LK;LKA;144;Asia;AS
+Sudan;SD;SDN;736;Africa;AF
+Suriname;SR;SUR;740;South America;SA
+Swaziland;SZ;SWZ;748;Africa;AF
+Sweden;SE;SWE;752;Europe;EU
+Switzerland;CH;CHE;756;Europe;EU
+Syria;SY;SYR;760;Asia;AS
+Taiwan;TW;TWN;158;Asia;AS
+Tajikistan;TJ;TJK;762;Asia;AS
+Thailand;TH;THA;764;Asia;AS
+The Bahamas;BS;BHS;044;North America;NA
+Togo;TG;TGO;768;Africa;AF
+Trinidad and Tobago;TT;TTO;780;North America;NA
+Tunisia;TN;TUN;788;Africa;AF
+Turkey;TR;TUR;792;Europe;EU
+Turkmenistan;TM;TKM;795;Asia;AS
+Uganda;UG;UGA;800;Africa;AF
+Ukraine;UA;UKR;804;Europe;EU
+United Arab Emirates;AE;ARE;784;Asia;AS
+United Kingdom;GB;GBR;826;Europe;EU
+United Republic of Tanzania;TZ;TZA;834;Africa;AF
+United States of America;US;USA;840;North America;NA
+Uruguay;UY;URY;858;South America;SA
+Uzbekistan;UZ;UZB;860;Asia;AS
+Vanuatu;VU;VUT;548;Oceania;OC
+Venezuela;VE;VEN;862;South America;SA
+Vietnam;VN;VNM;704;Asia;AS
+West Bank;PS;PSE;275;Asia;AS
+Western Sahara;EH;ESH;732;Africa;AF
+Yemen;YE;YEM;887;Asia;AS
+Zambia;ZM;ZMB;894;Africa;AF
+Zimbabwe;ZW;ZWE;716;Africa;AF
