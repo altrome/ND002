@@ -11,345 +11,349 @@
 -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
-    <style>
-	    @import url(https://fonts.googleapis.com/css?family=Lato:400,300);
-        body {
-	      font-family: Lato;
-	      text-align: center;
-        }
-        h2 {
-          color: black;
-          text-align: center;
-        }
-        
-        svg {
-	        margin: auto;
-	        display: inline-block;
-        }
-
-        .axis {
-          font-size: 0.6em;
-          font-weight: 300;
-        }
-
-        path {
-          fill: none;
-          stroke: black;
-          stroke-width: 2px;
-        }
-        
-        g.map {
-	        z-index: 100;
-        }
-		
-		g.lines {
-			z-index: 1;
-		}
-		
-        .tick {
-          fill: none;
-          stroke: black;
-        }
-
-        circle {
-          opacity: 0.4;
-          stroke: none;
-        }
-
-        .line_plot {
-          fill: none;
-          stroke: #4eb0bb;
-          stroke-width: 1px;
-        }
-        
-        g.axis line, g.axis path{
-		    shape-rendering:crispEdges;
-		    fill:none; 
-		    stroke:black;
-		}
-		g.x.axis g.tick text {
-		    opacity:0;
-		}
-		g.x.axis g.tick:nth-of-type(5n+1) text{
-		    opacity:1;
-		}
-		g.plot line {
-		    stroke-width:1;
-		    marker-start:url(#point);
-		    opacity:0.5;
-		}
-		
-		path.line {
-		    stroke-width:1;
-		    marker-start:url(#point);
-		    opacity:0.2;
-		}
-    </style>
-    <script type="text/javascript">
+	<head>
+	    <meta charset="utf-8">
+	    <script src="http://d3js.org/d3.v3.min.js"></script>
+	    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+	    <script src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
+	    <style>
+		    @import url(https://fonts.googleapis.com/css?family=Lato:400,300);
+	        body {
+		      font-family: Lato;
+		      text-align: center;
+	        }
+	        h2 {
+	          color: black;
+	          text-align: center;
+	        }
+	        
+	        svg {
+		        margin: auto;
+		        display: inline-block;
+	        }
 	
-	d3.selection.prototype.moveToFront = function() {
-		return this.each(function(){
-			this.parentNode.appendChild(this);
-		});
-	};
+	        .axis {
+	          font-size: 0.6em;
+	          font-weight: 300;
+	        }
 	
-	d3.selection.prototype.moveToBack = function() { 
-	    return this.each(function() { 
-	        var firstChild = this.parentNode.firstChild; 
-	        if (firstChild) { 
-	            this.parentNode.insertBefore(this, firstChild); 
-	        } 
-	    }); 
-	};
-	
-	var margin = 75,
-		width = 1200 - margin,
-		height = 530,
-		radius = 2,
-		format = d3.time.format("%Y"),
-		x_extent,
-		y_extent,
-		x_scale,
-		y_scale,
-		x_axis,
-		y_axis,
-		map;
-	
-	function plotLines(data) {
+	        path {
+	          fill: none;
+	          stroke: black;
+	          stroke-width: 2px;
+	        }
+	        
+	        g.map {
+		        z-index: 100;
+	        }
 			
-        x_extent = d3.extent(data, function(d) {
-            return d['Year'];
-        });
-
-        x_scale = d3.time.scale()
-            .range([margin, width])
-            .domain(x_extent);
-
-        y_extent = d3.extent(data, function(d) {
-            return d['Population'];
-        });
-
-        y_scale = d3.scale.log()
-        //var y_scale = d3.scale.linear()
-            .range([height + 40, 0])
-            .domain(y_extent);
-
-        x_axis = d3.svg.axis()
-            .scale(x_scale)
-            .ticks(d3.time.years, 10);
-
-        d3.select("svg")
-            .append('g')
-            .attr('class', 'x axis')
-            .attr('transform', "translate(0," + (height + 50) + ")")
-            .call(x_axis);
-
-        y_axis = d3.svg.axis()
-            .scale(y_scale)
-            .orient("left");
-
-		d3.select("svg")
-			.append('g')
-			.attr('class', 'y axis')
-			.attr('transform', "translate(" + margin + ",0)")
-			.call(y_axis);
-		
-/*
-		var lines = d3.select("svg")
-            .append('g')
-            .attr('class', 'lines')
-*/
-		
-		function agg_country(country) {
-
-            var yearPopulation = [],
-            	identifier,
-            	continent,
-            	continentCode;
-
-            country.forEach(function(d) {
-				yearPopulation.push({"year": d['Year'], "population":+d['Population']});
-				identifier = d['ISO3166-3'];
-				continent = d['Continent'];
-				continentCode = d['ContinentCode'];
-            });
-            
-            return {
-                'id': identifier,
-            	'yearPopulation' : yearPopulation,
-            	'continent': continent,
-            	'continentCode': continentCode
-            };
-        }
-          
-        var countries = d3.nest()
-           .key(function(d) {
-              return d['Country'];
-           })
-           .rollup(agg_country)
-           .entries(data);
-		
-		var country = d3.select("svg").selectAll(".country")
-			.data(countries)
-		    .enter()
-		    .append("g")
-		    .attr("class", "country")
-		    .attr("class", function(d) {return d.values.continent; })
-		    .attr("id", function(d) {return d.values.id; });
-		
-		var line = d3.svg.line()
-		    .interpolate("basis")
-		    .x(function(d) { return x_scale(d.year); })
-		    .y(function(d) { return y_scale(d.population); });  
-		
-		country.append("path")	
-			.attr("class", "line")
-			.attr("d", function(d) {return line(d.values.yearPopulation); })
-		    .style("stroke", "grey" );
-		   
-		var avgYear = d3.nest()
-			.key(function(d) { 
-				return d['Year']; 
-			})
-			.rollup(function(v) { 
-				return d3.mean(v, function(d) { 
-					return +d['Population'];
-				}); 
-			})
-			.entries(data);
-		
-		var avgLine = d3.svg.line()
-		    .interpolate("basis")
-		    .x(function(d) { return x_scale(new Date(d['key'])); })
-		    .y(function(d) { return y_scale(d['values']); }); 
-		
-		d3.select("svg")
-            .append("g")
-            .attr("class", "avgLine")
-			.append("path")
-		    .attr("class", "linePath")
-			.attr("d", avgLine(avgYear))
-		    .style("stroke", "blue" );
+			g.lines {
+				z-index: 1;
+			}
 			
-		//d3.select(".lines").moveToBack();
-	}
+	        .tick {
+	          fill: none;
+	          stroke: black;
+	        }
 	
-	function draw(geo_data) {
-		"use strict";
-		
-
-		d3.select("body")
-			.append("h2")
-			.text("World Population");		
-		
-		
-		var svg = d3.select("body")
-            .append("svg")
-            .attr("width", width + margin)
-            .attr("height", height + margin)
-            .append('g')
-            .attr('class', 'map');
-
-		
-		var projection = d3.geo.mercator()
-           .scale(155)
-           .translate([width / 2, height / 1.35]);
-		
-		var path = d3.geo.path().projection(projection);
-		
-		d3.tsv("World_population.tsv", function(d) {
-
-			d['Population'] = +d["Population"];
-			d['Year'] = format.parse(d['Year']);
+	        circle {
+	          opacity: 0.4;
+	          stroke: none;
+	        }
+	
+	        .line_plot {
+	          fill: none;
+	          stroke: #4eb0bb;
+	          stroke-width: 1px;
+	        }
+	        
+	        g.axis line, g.axis path{
+			    shape-rendering:crispEdges;
+			    fill:none; 
+			    stroke:black;
+			}
+			g.x.axis g.tick text {
+			    opacity:0;
+			}
+			g.x.axis g.tick:nth-of-type(5n+1) text{
+			    opacity:1;
+			}
+			g.plot line {
+			    stroke-width:1;
+			    marker-start:url(#point);
+			    opacity:0.5;
+			}
 			
-			return d;
-		}, plotLines);
+			path.line {
+			    stroke-width:1;
+			    marker-start:url(#point);
+			    opacity:0.2;
+			}
+	    </style>
+	    <script type="text/javascript">
 		
-		map = svg.selectAll('path')
-			.data(geo_data.features)
-			.enter()
-			.append('path')
-			.attr('d', path)
-			.attr("class",function(d){ return d.id})
-			.style('fill', '#ecf0f1')
-			.style('stroke', '#2c3e50')
-			.style('stroke-width', 0.5)
-			.style('fill-opacity', 0);
-					
-		map.on("mouseover", function(){
-            //console.log(this);
-            
-			//d3.select(".map").moveToBack();
-            
-            d3.select(this)
-            	.moveToFront()
-                .transition()
-                .duration(500)
-                .style('fill', "#9b59b6")
-                .style('fill-opacity', 0.8)
-                .style("stroke", "#3498db");  
-                    
-
-			var selection = this.getAttribute("class");
-
-			d3.select('#' + selection)
-				.moveToFront()
-				.select('path')
-				.transition()
-                .duration(500)
-				.style('stroke', 'red')
-                .style('stroke-width', 2)
-                .style('opacity', 0.7);
-                
-		});
+		//Adding new moveToFront method to d3.selection prototype
+		//This method allow change the order of the svg elements
+		//moving to front the selected element
+		d3.selection.prototype.moveToFront = function() {
+			return this.each(function(){
+				this.parentNode.appendChild(this);
+			});
+		};
 		
-		map.on("mouseout", function(){
+		//Adding new moveToBack method to d3.selection prototype
+		//This method allow change the order of the svg elements
+		//moving to back the selected element
+		d3.selection.prototype.moveToBack = function() { 
+		    return this.each(function() { 
+		        var firstChild = this.parentNode.firstChild; 
+		        if (firstChild) { 
+		            this.parentNode.insertBefore(this, firstChild); 
+		        } 
+		    }); 
+		};
+		
+		//Variables definition
+		var margin = 75,
+			width = 1200 - margin,
+			height = 530,
+			radius = 2,
+			format = d3.time.format("%Y"),
+			x_extent,
+			y_extent,
+			x_scale,
+			y_scale,
+			x_axis,
+			y_axis,
+			map;
+		
+		//Funtion to plot all the countries population lines
+		function plotLines(data) {
+				
+	        x_extent = d3.extent(data, function(d) {
+	            return d['Year'];
+	        });
+	
+	        x_scale = d3.time.scale()
+	            .range([margin, width])
+	            .domain(x_extent);
+	
+	        y_extent = d3.extent(data, function(d) {
+	            return d['Population'];
+	        });
+	
+	        y_scale = d3.scale.log()
+	        //var y_scale = d3.scale.linear()
+	            .range([height + 40, 0])
+	            .domain(y_extent);
+	
+	        x_axis = d3.svg.axis()
+	            .scale(x_scale)
+	            .ticks(d3.time.years, 10);
+	
+	        d3.select("svg")
+	            .append('g')
+	            .attr('class', 'x axis')
+	            .attr('transform', "translate(0," + (height + 50) + ")")
+	            .call(x_axis);
+	
+	        y_axis = d3.svg.axis()
+	            .scale(y_scale)
+	            .orient("left");
+	
+			d3.select("svg")
+				.append('g')
+				.attr('class', 'y axis')
+				.attr('transform', "translate(" + margin + ",0)")
+				.call(y_axis);
 			
-			d3.select(".map").moveToFront();
-
-			d3.select(this)
-				.moveToBack()
-                .transition()
-                .duration(500)
+			//Aggregate countries
+			function agg_country(country) {
+	
+	            var yearPopulation = [],
+	            	identifier,
+	            	continent,
+	            	continentCode;
+	
+	            country.forEach(function(d) {
+					yearPopulation.push({"year": d['Year'], "population":+d['Population']});
+					identifier = d['ISO3166-3'];
+					continent = d['Continent'];
+					continentCode = d['ContinentCode'];
+	            });
+	            
+	            return {
+	                'id': identifier,
+	            	'yearPopulation' : yearPopulation,
+	            	'continent': continent,
+	            	'continentCode': continentCode
+	            };
+	        }
+	          
+	        var countries = d3.nest()
+	           .key(function(d) {
+	              return d['Country'];
+	           })
+	           .rollup(agg_country)
+	           .entries(data);
+			
+			var country = d3.select("svg").selectAll(".country")
+				.data(countries)
+			    .enter()
+			    .append("g")
+			    .attr("class", "country")
+			    .attr("class", function(d) {return d.values.continent; })
+			    .attr("id", function(d) {return d.values.id; });
+			
+			var line = d3.svg.line()
+			    .interpolate("basis")
+			    .x(function(d) { return x_scale(d.year); })
+			    .y(function(d) { return y_scale(d.population); });  
+			
+			country.append("path")	
+				.attr("class", "line")
+				.attr("d", function(d) {return line(d.values.yearPopulation); })
+			    .style("stroke", "#95a5a6" );
+			   
+			var avgYear = d3.nest()
+				.key(function(d) { 
+					return d['Year']; 
+				})
+				.rollup(function(v) { 
+					return d3.mean(v, function(d) { 
+						return +d['Population'];
+					}); 
+				})
+				.entries(data);
+			
+			var avgLine = d3.svg.line()
+			    .interpolate("basis")
+			    .x(function(d) { return x_scale(new Date(d['key'])); })
+			    .y(function(d) { return y_scale(d['values']); }); 
+			
+			d3.select("svg")
+	            .append("g")
+	            .attr("class", "avgLine")
+				.append("path")
+			    .attr("class", "linePath")
+				.attr("d", avgLine(avgYear))
+			    .style("stroke", "blue" );
+				
+		}
+		
+		//funtion to plot the map and then call plotlines function
+		function draw(geo_data) {
+			"use strict";
+			
+	
+			d3.select("body")
+				.append("h2")
+				.text("World Population");		
+			
+			
+			var svg = d3.select("body")
+	            .append("svg")
+	            .attr("width", width + margin)
+	            .attr("height", height + margin)
+	            .append('g')
+	            .attr('class', 'map');
+	
+			
+			var projection = d3.geo.mercator()
+	           .scale(155)
+	           .translate([width / 2, height / 1.35]);
+			
+			var path = d3.geo.path().projection(projection);
+			
+			d3.tsv("World_population.tsv", function(d) {
+	
+				d['Population'] = +d["Population"];
+				d['Year'] = format.parse(d['Year']);
+				
+				return d;
+			}, plotLines);
+			
+			map = svg.selectAll('path')
+				.data(geo_data.features)
+				.enter()
+				.append('path')
+				.attr('d', path)
+				.attr("class",function(d){ return d.id})
 				.style('fill', '#ecf0f1')
 				.style('stroke', '#2c3e50')
-				.style('stroke-width', 0.5)
+				.style('stroke-width', 1)
 				.style('fill-opacity', 0);
-            
-            var selection = this.getAttribute("class");
-            
-            d3.select('#' + selection)
-            	.moveToBack()
-				.select('path')
-				.transition()
-                .duration(500)
-            	.style('stroke', 'grey')
-            	.style('opacity', 0.2)
-            	.style('stroke-width', 1);
-            
-            d3.select('#' + selection).moveToBack();
-           
-		});
-
-    };
-
-    
-    </script>
-  </head>
+			
+			//interacting with map on mouse over			
+			map.on("mouseover", function(){
+	            //console.log(this);
+	            
+	            d3.selectAll(".line")
+	            	.style("stroke", "#bdc3c7");  
+	            
+	            d3.select(this)
+	            	.moveToFront()
+	                .transition()
+	                .duration(500)
+	                .style('fill', "#9b59b6")
+	                .style('fill-opacity', 0.8)
+	                .style("stroke", "#8e44ad");  
+	                    
+	
+				var selection = this.getAttribute("class");
+	
+				d3.select('#' + selection)
+					.moveToFront()
+					.select('path')
+					.transition()
+	                .duration(500)
+					.style('stroke', 'red')
+	                .style('stroke-width', 2)
+	                .style('opacity', 0.7);
+	                
+			});
+			
+			//interacting with map on mouse out
+			map.on("mouseout", function(){
+				
+				d3.select(".map").moveToFront();
+				
+				d3.selectAll(".line")
+	            	.style("stroke", "#95a5a6");  
+				
+				d3.select(this)
+					.moveToBack()
+	                .transition()
+	                .duration(500)
+					.style('fill', '#ecf0f1')
+					.style('stroke', '#2c3e50')
+					.style('stroke-width', 0.5)
+					.style('fill-opacity', 0);
+	            
+	            var selection = this.getAttribute("class");
+	            
+	            d3.select('#' + selection)
+	            	.moveToBack()
+					.select('path')
+					.transition()
+	                .duration(500)
+	            	.style('stroke', 'grey')
+	            	.style('opacity', 0.2)
+	            	.style('stroke-width', 1);
+	            
+	            d3.select('#' + selection).moveToBack();
+	           
+			});
+	
+	    };
+	
+	    
+	    </script>
+	</head>
 <body>
-  <script type="text/javascript">
-	/*
-	Use D3 to load the GeoJSON file
-	*/
-	
-	d3.json("world_countries.json", draw);
-	
-  </script>
-  <div id="svg"></div>
+	<script type="text/javascript">
+		d3.json("world_countries.json", draw);
+	</script>
+	<div id="svg"></div>
 </body>
 </html>
