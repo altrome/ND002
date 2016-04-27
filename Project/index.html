@@ -23,15 +23,8 @@
 		    @import url(https://fonts.googleapis.com/css?family=Lato:400,300);
 	        body {
 		      font-family: Lato;
-/* 		      text-align: center; */
 	        }
-/*
-	        h2 {
-	          color: black;
-	          text-align: center;
-	        }
-*/
-	        
+        
 	        svg {
 		        margin: auto;
 		        display: inline-block;
@@ -47,29 +40,10 @@
 	          stroke: black;
 	          stroke-width: 2px;
 	        }
-	        
-	        g.map {
-		        z-index: 100;
-	        }
-			
-			g.lines {
-				z-index: 1;
-			}
-			
+						
 	        .tick {
 	          fill: none;
 	          stroke: black;
-	        }
-	
-	        circle {
-	          opacity: 0.4;
-	          stroke: none;
-	        }
-	
-	        .line_plot {
-	          fill: none;
-	          stroke: #4eb0bb;
-	          stroke-width: 1px;
 	        }
 	        
 	        g.axis line, g.axis path{
@@ -158,9 +132,10 @@
 			map,
 			legend;
 		
-		//Funtion to plot all the countries population lines
+		//Function to plot all the countries population lines
 		function plotLines(data) {
-				
+			
+			//Axis and scale stuff	
 	        x_extent = d3.extent(data, function(d) {
 	            return d['Year'];
 	        });
@@ -172,7 +147,8 @@
 	        y_extent = d3.extent(data, function(d) {
 	            return d['Population'];
 	        });
-			
+	        
+			//depending on which scale is selected choose the appropiate d3 scale
 			if (scale === "log"){
 				y_scale = d3.scale.log(); 
 			} else if (scale === "linear") {
@@ -235,7 +211,8 @@
 	            	'continentCode': continentCode
 	            };
 	        }
-	          
+	        
+	        //nesting countries by country name  
 	        var countries = d3.nest()
 	           .key(function(d) {
 	              return d['Country'];
@@ -243,6 +220,7 @@
 	           .rollup(agg_country)
 	           .entries(data);
 			
+			//plotting country lines and adding data attributes to use later on interaction
 			var country = d3.select("svg").selectAll(".country")
 				.data(countries)
 			    .enter()
@@ -253,18 +231,21 @@
 			    .attr("data-population", function(d) { return JSON.stringify(d.values.yearPopulation); })
 			    .attr("id", function(d) {return d.values.id; });
 			
+			//function to plot country population line
 			var line = d3.svg.line()
 			    .interpolate("basis")
 			    .x(function(d) { return x_scale(d.year); })
 			    .y(function(d) { return y_scale(d.population); });  
 			
+			//appending lines to country
 			country.append("path")	
 				.attr("class", "line")
 				.attr("d", function(d) {return line(d.values.yearPopulation); })
 			    .style("stroke", "#95a5a6" )
 			    .style('stroke-width', 0.5)
 			    .style('opacity', 0.4);
-			   
+			
+			//Average population by year  
 			var avgYear = d3.nest()
 				.key(function(d) { 
 					return d['Year']; 
@@ -276,6 +257,7 @@
 				})
 				.entries(data);
 			
+			//function to plot average line
 			var avgLine = d3.svg.line()
 			    .interpolate("basis")
 			    .x(function(d) { return x_scale(new Date(d['key'])); })
@@ -292,10 +274,10 @@
 				
 		}
 		
-		//funtion to plot the map and then call plotlines function
+		//function to plot the map and then call plotlines function
 		function draw(geo_data) {
 			"use strict";
-			
+			//remove any existing svg (used when changing scale type)
 			d3.selectAll("svg").remove();
 			
 			var svg = d3.select("#svg")
@@ -315,6 +297,7 @@
 			
 			var path = d3.geo.path().projection(projection);
 			
+			//get population data and pass it to platLines function
 			d3.tsv("World_population.tsv", function(d) {
 	
 				d['Population'] = +d["Population"];
@@ -323,6 +306,7 @@
 				return d;
 			}, plotLines);
 			
+			//plot map
 			map = svg.selectAll('.map')
 				.data(geo_data.features)
 				.enter()
@@ -334,10 +318,12 @@
 				.style('stroke-width', 1)
 				.style('fill-opacity', 0);
 			
+			//Create a legend group
 			legend =  d3.select("svg")
 	            .append('g')
 	            .attr('class', 'legend');
 			
+			//Append the average blue line
 			legend.append("line")
 				.attr("x1", 550)
 				.attr("y1", 520)
@@ -346,6 +332,7 @@
 				.style("stroke", "#2980b9" )
 				.style('stroke-width', 2);
 			
+			//Append the average line text
 			legend.append("text")
 				.text("Average Population Evolution")
 				.attr("x", 590)
@@ -358,6 +345,7 @@
 	            d3.selectAll(".line")
 	            	.style('opacity', 0.2);  
 	            
+	            //Highlighting hovered country
 	            d3.select(this)
 	            	.moveToFront()
 	                .transition()
@@ -365,15 +353,16 @@
 	                .style('fill', "#9b59b6")
 	                .style('fill-opacity', 0.5)
 	                .style("stroke", "#8e44ad");  
-	                    
-	
+				
+				//getting the hovered country ref and its data associated
 				var selection = this.getAttribute("class");
 				var countryName = d3.select('#' + selection).attr("data-countryname");
 				var continent = d3.select('#' + selection).attr("data-continent");
 				var population = JSON.parse(d3.select('#' + selection).attr("data-population"));
 				
 				var lastPopulation = population[Object.keys(population)[Object.keys(population).length - 1]]['population'];
-	
+				
+				//Highlighting country population evolution line
 				d3.select('#' + selection)
 					.moveToFront()
 					.select('path')
@@ -383,6 +372,7 @@
 	                .style('stroke-width', 2)
 	                .style('opacity', 1);
 	            
+	            //Showing legend corresponding to highlighted country
 	            legend.append("line")
 	            	.attr("class", "current")
 					.attr("x1", 550)
@@ -410,8 +400,10 @@
 			//interacting with map on mouse out
 			map.on("mouseout", function(){
 				
+				//Changing the order of map
 				d3.select(".map").moveToFront();
 				
+				//Returning all elements to original state
 				d3.selectAll(".line")
 	            	.style('opacity', 0.5);  
 				
@@ -425,7 +417,6 @@
 					.style('fill-opacity', 0);
 	            
 	            var selection = this.getAttribute("class");
-	            
 	            	            
 	            d3.select('#' + selection)
 	            	.moveToBack()
@@ -438,10 +429,12 @@
 	            
 	            d3.select('#' + selection).moveToBack();
 	            
+	            //remove legend
 	            d3.selectAll(".current").remove();
 	           
 			});
 			
+			//Make map responsive
 			var chart = $("#chart"),
 			    aspect = chart.width() / chart.height(),
 			    container = chart.parent();
@@ -453,24 +446,24 @@
 	
 	    };
 		
+		//Function to set scale to Linear
 		function axisToLinear() {
 			scale = "linear";
-	        
-	        d3.json("world_countries.json", draw);        	
+			d3.json("world_countries.json", draw);        	
 		}
 		
+		//Function to set scale to logarithmic
 		function axisToLog() {
 			scale = "log";
-	        
-	        d3.json("world_countries.json", draw);        	
+			d3.json("world_countries.json", draw);        	
 		}
 	    
 	    </script>
 	</head>
 <body>
 	<script type="text/javascript">
+		//Get world countries json data an pass it to draw function
 		d3.json("world_countries.json", draw);
-		
 	</script>
 	<div id="main" class="container">
 		<div class="header clearfix">
