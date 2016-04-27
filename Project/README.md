@@ -26,6 +26,8 @@ This project was motivated by a post published at the Spanish version of "The Hu
 
 The design process was not easy, because I needed to understand how d3 works, and practice a lot. The map was the easiest part, because I used the code used in the course, but all the rest was fully coded from scratch. In addition, I'm not an expert in javascript, so I needed to refresh and/or learn some concepts.
 
+The first visualization, was made with a linear Y axis, and countries like China or India have a population evolution line much greater than the rest of the countries, so I decided to use a logarithmic scale, maintaining the original linear scale in case someone wants to see the data that way.
+
 Once the visualization was done, I started with the user interaction, and some problems appeared, but the most important was that the lines were plotted over the map, and some countries were unable to be selected. Searching over the net, I found some interesting posts to deal with that problem.
 
 The final design took me about 30 hours, 15 of them, were used to solve interaction problems.
