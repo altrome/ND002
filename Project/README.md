@@ -1,7 +1,7 @@
 # World Population Evolution Visualization
 ### Data Visualization with D3 - Udacity's Data Analyst Nanodegree
 
-Direct link to the visualization (bl.ocks.org)[http://bl.ocks.org/altrome/raw/ae6d6aa352f08ea339300cd38f5a8c9d/]
+Direct link to the visualization [bl.ocks.org](http://bl.ocks.org/altrome/raw/ae6d6aa352f08ea339300cd38f5a8c9d/)
 
 ## Summary
 
@@ -35,6 +35,7 @@ The final design took me about 30 hours, 15 of them, were used to solve interact
 Some online and offline users gave me some feedback that I used to improve my design in some cases, and in other cases I was not able to implement the provided ideas. Here is a list of them and the action done:
 
 * "Looks good, but there is an strange behavior when moving the mouse over a country with line over it." - As I mentioned above, this was one of the main challenges, because of the order of the SVG elements in the chart. Finally I solved it.
+* "Some colors of the map merge with the lines and it's difficult to distinguish the evolution lines." - True... I search for an optimal color combination and played with opacities. 
 * "Can the y-axis update itself when you choose a country such that the y-max value is lowered for smaller populations?" - Good idea, but After search a lot, I was not able to implement it... I'll continue searching
 * "Would be cool if you could pick two or more countries at the same time to compare the populations." - True... but the main objective of the visualization is to show one country evolution and not to compare one with another, but I'll try to test it.
 
