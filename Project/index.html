@@ -1,477 +1,491 @@
 <!DOCTYPE html>
+
 <html>
-	<head>
-	    <meta charset="utf-8">
-	    <script src="http://d3js.org/d3.v3.min.js"></script>
-	    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
-	    <script src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
-	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-	    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-	    <style>
-		    @import url(https://fonts.googleapis.com/css?family=Lato:400,300);
-	        body {
-		      font-family: Lato;
-	        }
+<head>
+    <meta charset="utf-8">
+    <script src="http://d3js.org/d3.v3.min.js" type="text/javascript">
+</script>
+    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js" type="text/javascript">
+</script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous" type="text/javascript">
+</script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous" type="text/javascript">
+</script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous" type="text/css">
+    <style type="text/css">
+        @import url(https://fonts.googleapis.com/css?family=Lato:400,300);
+            body {
+              font-family: Lato;
+            }
         
-	        svg {
-		        margin: auto;
-		        display: inline-block;
-	        }
-	
-	        .axis {
-	          font-size: 0.6em;
-	          font-weight: 300;
-	        }
-	
-	        path {
-	          fill: none;
-	          stroke: black;
-	          stroke-width: 2px;
-	        }
-						
-	        .tick {
-	          fill: none;
-	          stroke: black;
-	        }
-	        
-	        g.axis line, g.axis path{
-			    shape-rendering:crispEdges;
-			    fill:none; 
-			    stroke:black;
-			}
-			g.x.axis g.tick text {
-			    opacity:0;
-			}
-			g.x.axis g.tick:nth-of-type(5n+1) text{
-			    opacity:1;
-			}
-			g.plot line {
-			    stroke-width:1;
-			    marker-start:url(#point);
-			    opacity:0.5;
-			}
-			
-			path.line {
-			    stroke-width:1;
-			    marker-start:url(#point);
-			    opacity:0.2;
-			}
-			
-			.header {
-			    padding-bottom: 20px;
-			    border-bottom: 1px solid #e5e5e5;
-			}
-			
-			.presentation {
-				margin-top: 40px;
-				margin-bottom: 40px;
-			}
-			
-			.plot {
-				margin-bottom: 40px;
-			}
-			
-			.footer {
-			    padding-top: 19px;
-			    color: #777;
-			    border-top: 1px solid #e5e5e5;
-			}
-			
-			.ATF {
-				display: none;
-			}
-	    </style>
-	    <script type="text/javascript">
-		
-		//Adding new moveToFront method to d3.selection prototype
-		//This method allow change the order of the svg elements
-		//moving to front the selected element
-		d3.selection.prototype.moveToFront = function() {
-			return this.each(function(){
-				this.parentNode.appendChild(this);
-			});
-		};
-		
-		//Adding new moveToBack method to d3.selection prototype
-		//This method allow change the order of the svg elements
-		//moving to back the selected element
-		d3.selection.prototype.moveToBack = function() { 
-		    return this.each(function() { 
-		        var firstChild = this.parentNode.firstChild; 
-		        if (firstChild) { 
-		            this.parentNode.insertBefore(this, firstChild); 
-		        } 
-		    }); 
-		};
-		
-		//Variables definition
-		var margin = 75,
-			width = 1200 - margin,
-			height = 530,
-			radius = 2,
-			format = d3.time.format("%Y"),
-			x_extent,
-			y_extent,
-			x_scale,
-			y_scale,
-			x_axis,
-			y_axis,
-			scale = "log",
-			map,
-			legend;
-		
-		//Function to plot all the countries population lines
-		function plotLines(data) {
-			
-			//Axis and scale stuff	
-	        x_extent = d3.extent(data, function(d) {
-	            return d['Year'];
-	        });
-	
-	        x_scale = d3.time.scale()
-	            .range([margin, width])
-	            .domain(x_extent);
-	
-	        y_extent = d3.extent(data, function(d) {
-	            return d['Population'];
-	        });
-	        
-			//depending on which scale is selected choose the appropiate d3 scale
-			if (scale === "log"){
-				y_scale = d3.scale.log(); 
-			} else if (scale === "linear") {
-				y_scale = d3.scale.linear();
-			}
-	        y_scale.range([height + 40, 0]).domain(y_extent);
-	
-	        x_axis = d3.svg.axis()
-	            .scale(x_scale)
-	            .ticks(d3.time.years, 10);
-	
-	        d3.select("svg")
-	            .append('g')
-	            .attr('class', 'x axis')
-	            .attr('transform', "translate(0," + (height + 50) + ")")
-	            .call(x_axis)
-	            .append("text")
-	            .attr("x", width)
-	            .attr("dy", "-.5em")
-	            .style("font-size", "14px")
-				.style("text-anchor", "end")
-				.text("Year");
-	
-	        y_axis = d3.svg.axis()
-	            .scale(y_scale)
-	            .orient("left");
-	
-			d3.select("svg")
-				.append('g')
-				.attr('class', 'y axis')
-				.attr('transform', "translate(" + margin + ",0)")
-				.call(y_axis)
-				.append("text")
-				.attr("transform", "rotate(-90)")
-				.attr("y", 6)
-				.attr("dy", ".75em")
-				.style("font-size", "14px")
-				.style("text-anchor", "end")
-				.text("Population (" + scale + ")");
-			
-			//Aggregate countries
-			function agg_country(country) {
-	
-	            var yearPopulation = [],
-	            	identifier,
-	            	continent,
-	            	continentCode;
-	
-	            country.forEach(function(d) {
-					yearPopulation.push({"year": d['Year'], "population":+d['Population']});
-					identifier = d['ISO3166-3'];
-					continent = d['Continent'];
-					continentCode = d['ContinentCode'];
-	            });
-	            
-	            return {
-	                'id': identifier,
-	            	'yearPopulation' : yearPopulation,
-	            	'continent': continent,
-	            	'continentCode': continentCode
-	            };
-	        }
-	        
-	        //nesting countries by country name  
-	        var countries = d3.nest()
-	           .key(function(d) {
-	              return d['Country'];
-	           })
-	           .rollup(agg_country)
-	           .entries(data);
-			
-			//plotting country lines and adding data attributes to use later on interaction
-			var country = d3.select("svg").selectAll(".country")
-				.data(countries)
-			    .enter()
-			    .append("g")
-			    .attr("class", "country")
-			    .attr("data-continent", function(d) {return d.values.continent; })
-			    .attr("data-countryname", function(d) {return d.key; })
-			    .attr("data-population", function(d) { return JSON.stringify(d.values.yearPopulation); })
-			    .attr("id", function(d) {return d.values.id; });
-			
-			//function to plot country population line
-			var line = d3.svg.line()
-			    .interpolate("basis")
-			    .x(function(d) { return x_scale(d.year); })
-			    .y(function(d) { return y_scale(d.population); });  
-			
-			//appending lines to country
-			country.append("path")	
-				.attr("class", "line")
-				.attr("d", function(d) {return line(d.values.yearPopulation); })
-			    .style("stroke", "#95a5a6" )
-			    .style('stroke-width', 0.5)
-			    .style('opacity', 0.4);
-			
-			//Average population by year  
-			var avgYear = d3.nest()
-				.key(function(d) { 
-					return d['Year']; 
-				})
-				.rollup(function(v) { 
-					return d3.mean(v, function(d) { 
-						return +d['Population'];
-					}); 
-				})
-				.entries(data);
-			
-			//function to plot average line
-			var avgLine = d3.svg.line()
-			    .interpolate("basis")
-			    .x(function(d) { return x_scale(new Date(d['key'])); })
-			    .y(function(d) { return y_scale(d['values']); }); 
-			
-			d3.select("svg")
-	            .append("g")
-	            .attr("class", "avgLine")
-				.append("path")
-			    .attr("class", "linePath")
-				.attr("d", avgLine(avgYear))
-			    .style("stroke", "#2980b9" )
-			    .style('stroke-width', 2);
-				
-		}
-		
-		//function to plot the map and then call plotlines function
-		function draw(geo_data) {
-			"use strict";
-			//remove any existing svg (used when changing scale type)
-			d3.selectAll("svg").remove();
-			
-			var svg = d3.select("#svg")
-	            .append("svg")
-	            .attr("id", "chart")
-	            .attr("width", width + margin)
-	            .attr("height", height + margin)
-	            .attr("viewBox", "0 0 " + (width + margin) + " " + (height + margin))
-				.attr("preserveAspectRatio", "xMinYMid")
-	            .append('g')
-	            .attr('class', 'map');
-	
-			
-			var projection = d3.geo.mercator()
-	           .scale(155)
-	           .translate([width / 2, height / 1.35]);
-			
-			var path = d3.geo.path().projection(projection);
-			
-			//get population data and pass it to platLines function
-			d3.tsv("World_population.tsv", function(d) {
-	
-				d['Population'] = +d["Population"];
-				d['Year'] = format.parse(d['Year']);
-				
-				return d;
-			}, plotLines);
-			
-			//plot map
-			map = svg.selectAll('.map')
-				.data(geo_data.features)
-				.enter()
-				.append('path')
-				.attr('d', path)
-				.attr("class",function(d){ return d.id})
-				.style('fill', '#ecf0f1')
-				.style('stroke', '#2c3e50')
-				.style('stroke-width', 1)
-				.style('fill-opacity', 0);
-			
-			//Create a legend group
-			legend =  d3.select("svg")
-	            .append('g')
-	            .attr('class', 'legend');
-			
-			//Append the average blue line
-			legend.append("line")
-				.attr("x1", 550)
-				.attr("y1", 520)
-				.attr("x2", 580)
-				.attr("y2", 520)
-				.style("stroke", "#2980b9" )
-				.style('stroke-width', 2);
-			
-			//Append the average line text
-			legend.append("text")
-				.text("Average Population Evolution")
-				.attr("x", 590)
-				.attr("y", 525);
-			
-			//interacting with map on mouse over			
-			map.on("mouseover", function(){
-	            //console.log(this);
-	            
-	            d3.selectAll(".line")
-	            	.style('opacity', 0.2);  
-	            
-	            //Highlighting hovered country
-	            d3.select(this)
-	            	.moveToFront()
-	                .transition()
-	                .duration(500)
-	                .style('fill', "#9b59b6")
-	                .style('fill-opacity', 0.5)
-	                .style("stroke", "#8e44ad");  
-				
-				//getting the hovered country ref and its data associated
-				var selection = this.getAttribute("class");
-				var countryName = d3.select('#' + selection).attr("data-countryname");
-				var continent = d3.select('#' + selection).attr("data-continent");
-				var population = JSON.parse(d3.select('#' + selection).attr("data-population"));
-				
-				var lastPopulation = population[Object.keys(population)[Object.keys(population).length - 1]]['population'];
-				
-				//Highlighting country population evolution line
-				d3.select('#' + selection)
-					.moveToFront()
-					.select('path')
-					.transition()
-	                .duration(500)
-					.style('stroke', '#e74c3c')
-	                .style('stroke-width', 2)
-	                .style('opacity', 1);
-	            
-	            //Showing legend corresponding to highlighted country
-	            legend.append("line")
-	            	.attr("class", "current")
-					.attr("x1", 550)
-					.attr("y1", 540)
-					.attr("x2", 580)
-					.attr("y2", 540)
-					.style("stroke", "#e74c3c" )
-					.style('stroke-width', 2)
-	                .style('opacity', 1);
-				
-				legend.append("text")
-					.attr("class", "current")
-					.text(countryName + " (" + continent + ") Population Evolution ")
-					.attr("x", 590)
-					.attr("y", 545);
-				
-				legend.append("text")
-					.attr("class", "current")
-					.text(" 2015 Population - " + lastPopulation)
-					.attr("x", 590)
-					.attr("y", 565);
-		                
-			});
-			
-			//interacting with map on mouse out
-			map.on("mouseout", function(){
-				
-				//Changing the order of map
-				d3.select(".map").moveToFront();
-				
-				//Returning all elements to original state
-				d3.selectAll(".line")
-	            	.style('opacity', 0.5);  
-				
-				d3.select(this)
-					.moveToBack()
-	                .transition()
-	                .duration(500)
-					.style('fill', '#ecf0f1')
-					.style('stroke', '#2c3e50')
-					.style('stroke-width', 0.5)
-					.style('fill-opacity', 0);
-	            
-	            var selection = this.getAttribute("class");
-	            	            
-	            d3.select('#' + selection)
-	            	.moveToBack()
-					.select('path')
-					.transition()
-	                .duration(500)
-	            	.style('stroke', 'grey')
-	            	.style('opacity', 0.2)
-	            	.style('stroke-width', 1);
-	            
-	            d3.select('#' + selection).moveToBack();
-	            
-	            //remove legend
-	            d3.selectAll(".current").remove();
-	           
-			});
-			
-			//Make map responsive
-			var chart = $("#chart"),
-			    aspect = chart.width() / chart.height(),
-			    container = chart.parent();
-			$(window).on("resize", function() {
-			    var targetWidth = container.width();
-			    chart.attr("width", targetWidth);
-			    chart.attr("height", Math.round(targetWidth / aspect));
-			}).trigger("resize");
-	
-	    };
-		
-		//Function to set scale to Linear
-		function axisToLinear() {
-			scale = "linear";
-			d3.json("world_countries.json", draw);        	
-		}
-		
-		//Function to set scale to logarithmic
-		function axisToLog() {
-			scale = "log";
-			d3.json("world_countries.json", draw);        	
-		}
-	    
-	    </script>
-	</head>
+            svg {
+                margin: auto;
+                display: inline-block;
+            }
+
+            .axis {
+              font-size: 0.6em;
+              font-weight: 300;
+            }
+
+            path {
+              fill: none;
+              stroke: black;
+              stroke-width: 2px;
+            }
+                        
+            .tick {
+              fill: none;
+              stroke: black;
+            }
+            
+            g.axis line, g.axis path{
+                shape-rendering:crispEdges;
+                fill:none; 
+                stroke:black;
+            }
+            g.x.axis g.tick text {
+                opacity:0;
+            }
+            g.x.axis g.tick:nth-of-type(5n+1) text{
+                opacity:1;
+            }
+            g.plot line {
+                stroke-width:1;
+                marker-start:url(#point);
+                opacity:0.5;
+            }
+            
+            path.line {
+                stroke-width:1;
+                marker-start:url(#point);
+                opacity:0.2;
+            }
+            
+            .header {
+                padding-bottom: 20px;
+                border-bottom: 1px solid #e5e5e5;
+            }
+            
+            .presentation {
+                margin-top: 40px;
+                margin-bottom: 40px;
+            }
+            
+            .plot {
+                margin-bottom: 40px;
+            }
+            
+            .footer {
+                padding-top: 19px;
+                color: #777;
+                border-top: 1px solid #e5e5e5;
+            }
+            
+            .ATF {
+                display: none;
+            }
+    </style>
+    <script type="text/javascript">
+    
+        //Adding new moveToFront method to d3.selection prototype
+        //This method allow change the order of the svg elements
+        //moving to front the selected element
+        d3.selection.prototype.moveToFront = function() {
+            return this.each(function(){
+                this.parentNode.appendChild(this);
+            });
+        };
+        
+        //Adding new moveToBack method to d3.selection prototype
+        //This method allow change the order of the svg elements
+        //moving to back the selected element
+        d3.selection.prototype.moveToBack = function() { 
+            return this.each(function() { 
+                var firstChild = this.parentNode.firstChild; 
+                if (firstChild) { 
+                    this.parentNode.insertBefore(this, firstChild); 
+                } 
+            }); 
+        };
+        
+        //Variables definition
+        var margin = 75,
+            width = 1200 - margin,
+            height = 530,
+            radius = 2,
+            format = d3.time.format("%Y"),
+            x_extent,
+            y_extent,
+            x_scale,
+            y_scale,
+            x_axis,
+            y_axis,
+            scale = "log",
+            map,
+            legend;
+        
+        //Function to plot all the countries population lines
+        function plotLines(data) {
+            
+            //Axis and scale stuff  
+            x_extent = d3.extent(data, function(d) {
+                return d['Year'];
+            });
+
+            x_scale = d3.time.scale()
+                .range([margin, width])
+                .domain(x_extent);
+
+            y_extent = d3.extent(data, function(d) {
+                return d['Population'];
+            });
+            
+            //depending on which scale is selected choose the appropiate d3 scale
+            if (scale === "log"){
+                y_scale = d3.scale.log(); 
+            } else if (scale === "linear") {
+                y_scale = d3.scale.linear();
+            }
+            y_scale.range([height + 40, 0]).domain(y_extent);
+
+            x_axis = d3.svg.axis()
+                .scale(x_scale)
+                .ticks(d3.time.years, 10);
+
+            d3.select("svg")
+                .append('g')
+                .attr('class', 'x axis')
+                .attr('transform', "translate(0," + (height + 50) + ")")
+                .call(x_axis)
+                .append("text")
+                .attr("x", width)
+                .attr("dy", "-.5em")
+                .style("font-size", "14px")
+                .style("text-anchor", "end")
+                .text("Year");
+
+            y_axis = d3.svg.axis()
+                .scale(y_scale)
+                .orient("left");
+
+            d3.select("svg")
+                .append('g')
+                .attr('class', 'y axis')
+                .attr('transform', "translate(" + margin + ",0)")
+                .call(y_axis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".75em")
+                .style("font-size", "14px")
+                .style("text-anchor", "end")
+                .text("Population (" + scale + ")");
+            
+            //Aggregate countries
+            function agg_country(country) {
+
+                var yearPopulation = [],
+                    identifier,
+                    continent,
+                    continentCode;
+
+                country.forEach(function(d) {
+                    yearPopulation.push({"year": d['Year'], "population":+d['Population']});
+                    identifier = d['ISO3166-3'];
+                    continent = d['Continent'];
+                    continentCode = d['ContinentCode'];
+                });
+                
+                return {
+                    'id': identifier,
+                    'yearPopulation' : yearPopulation,
+                    'continent': continent,
+                    'continentCode': continentCode
+                };
+            }
+            
+            //nesting countries by country name  
+            var countries = d3.nest()
+               .key(function(d) {
+                  return d['Country'];
+               })
+               .rollup(agg_country)
+               .entries(data);
+            
+            //plotting country lines and adding data attributes to use later on interaction
+            var country = d3.select("svg").selectAll(".country")
+                .data(countries)
+                .enter()
+                .append("g")
+                .attr("class", "country")
+                .attr("data-continent", function(d) {return d.values.continent; })
+                .attr("data-countryname", function(d) {return d.key; })
+                .attr("data-population", function(d) { return JSON.stringify(d.values.yearPopulation); })
+                .attr("id", function(d) {return d.values.id; });
+            
+            //function to plot country population line
+            var line = d3.svg.line()
+                .interpolate("basis")
+                .x(function(d) { return x_scale(d.year); })
+                .y(function(d) { return y_scale(d.population); });  
+            
+            //appending lines to country
+            country.append("path")  
+                .attr("class", "line")
+                .attr("d", function(d) {return line(d.values.yearPopulation); })
+                .style("stroke", "#95a5a6" )
+                .style('stroke-width', 0.5)
+                .style('opacity', 0.4);
+            
+            //Average population by year  
+            var avgYear = d3.nest()
+                .key(function(d) { 
+                    return d['Year']; 
+                })
+                .rollup(function(v) { 
+                    return d3.mean(v, function(d) { 
+                        return +d['Population'];
+                    }); 
+                })
+                .entries(data);
+            
+            //function to plot average line
+            var avgLine = d3.svg.line()
+                .interpolate("basis")
+                .x(function(d) { return x_scale(new Date(d['key'])); })
+                .y(function(d) { return y_scale(d['values']); }); 
+            
+            d3.select("svg")
+                .append("g")
+                .attr("class", "avgLine")
+                .append("path")
+                .attr("class", "linePath")
+                .attr("d", avgLine(avgYear))
+                .style("stroke", "#2980b9" )
+                .style('stroke-width', 2);
+                
+        }
+        
+        //function to plot the map and then call plotlines function
+        function draw(geo_data) {
+            "use strict";
+            //remove any existing svg (used when changing scale type)
+            d3.selectAll("svg").remove();
+            
+            var svg = d3.select("#svg")
+                .append("svg")
+                .attr("id", "chart")
+                .attr("width", width + margin)
+                .attr("height", height + margin)
+                .attr("viewBox", "0 0 " + (width + margin) + " " + (height + margin))
+                .attr("preserveAspectRatio", "xMinYMid")
+                .append('g')
+                .attr('class', 'map');
+
+            
+            var projection = d3.geo.mercator()
+               .scale(155)
+               .translate([width / 2, height / 1.35]);
+            
+            var path = d3.geo.path().projection(projection);
+            
+            //get population data and pass it to platLines function
+            d3.tsv("World_population.tsv", function(d) {
+
+                d['Population'] = +d["Population"];
+                d['Year'] = format.parse(d['Year']);
+                
+                return d;
+            }, plotLines);
+            
+            //plot map
+            map = svg.selectAll('.map')
+                .data(geo_data.features)
+                .enter()
+                .append('path')
+                .attr('d', path)
+                .attr("class",function(d){ return d.id})
+                .style('fill', '#ecf0f1')
+                .style('stroke', '#2c3e50')
+                .style('stroke-width', 1)
+                .style('fill-opacity', 0);
+            
+            //Create a legend group
+            legend =  d3.select("svg")
+                .append('g')
+                .attr('class', 'legend');
+            
+            //Append the average blue line
+            legend.append("line")
+                .attr("x1", 550)
+                .attr("y1", 520)
+                .attr("x2", 580)
+                .attr("y2", 520)
+                .style("stroke", "#2980b9" )
+                .style('stroke-width', 2);
+            
+            //Append the average line text
+            legend.append("text")
+                .text("Average Population Evolution")
+                .attr("x", 590)
+                .attr("y", 525);
+            
+            //interacting with map on mouse over            
+            map.on("mouseover", function(){
+                //console.log(this);
+                
+                d3.selectAll(".line")
+                    .style('opacity', 0.2);  
+                
+                //Highlighting hovered country
+                d3.select(this)
+                    .moveToFront()
+                    .transition()
+                    .duration(500)
+                    .style('fill', "#9b59b6")
+                    .style('fill-opacity', 0.5)
+                    .style("stroke", "#8e44ad");  
+                
+                //getting the hovered country ref and its data associated
+                var selection = this.getAttribute("class");
+                var countryName = d3.select('#' + selection).attr("data-countryname");
+                var continent = d3.select('#' + selection).attr("data-continent");
+                var population = JSON.parse(d3.select('#' + selection).attr("data-population"));
+                
+                var lastPopulation = population[Object.keys(population)[Object.keys(population).length - 1]]['population'];
+                
+                //Highlighting country population evolution line
+                d3.select('#' + selection)
+                    .moveToFront()
+                    .select('path')
+                    .transition()
+                    .duration(500)
+                    .style('stroke', '#e74c3c')
+                    .style('stroke-width', 2)
+                    .style('opacity', 1);
+                
+                //Showing legend corresponding to highlighted country
+                legend.append("line")
+                    .attr("class", "current")
+                    .attr("x1", 550)
+                    .attr("y1", 540)
+                    .attr("x2", 580)
+                    .attr("y2", 540)
+                    .style("stroke", "#e74c3c" )
+                    .style('stroke-width', 2)
+                    .style('opacity', 1);
+                
+                legend.append("text")
+                    .attr("class", "current")
+                    .text(countryName + " (" + continent + ") Population Evolution ")
+                    .attr("x", 590)
+                    .attr("y", 545);
+                
+                legend.append("text")
+                    .attr("class", "current")
+                    .text(" 2015 Population - " + lastPopulation)
+                    .attr("x", 590)
+                    .attr("y", 565);
+                        
+            });
+            
+            //interacting with map on mouse out
+            map.on("mouseout", function(){
+                
+                //Changing the order of map
+                d3.select(".map").moveToFront();
+                
+                //Returning all elements to original state
+                d3.selectAll(".line")
+                    .style('opacity', 0.5);  
+                
+                d3.select(this)
+                    .moveToBack()
+                    .transition()
+                    .duration(500)
+                    .style('fill', '#ecf0f1')
+                    .style('stroke', '#2c3e50')
+                    .style('stroke-width', 0.5)
+                    .style('fill-opacity', 0);
+                
+                var selection = this.getAttribute("class");
+                                
+                d3.select('#' + selection)
+                    .moveToBack()
+                    .select('path')
+                    .transition()
+                    .duration(500)
+                    .style('stroke', 'grey')
+                    .style('opacity', 0.2)
+                    .style('stroke-width', 1);
+                
+                d3.select('#' + selection).moveToBack();
+                
+                //remove legend
+                d3.selectAll(".current").remove();
+               
+            });
+            
+            //Make map responsive
+            var chart = $("#chart"),
+                aspect = chart.width() / chart.height(),
+                container = chart.parent();
+            $(window).on("resize", function() {
+                var targetWidth = container.width();
+                chart.attr("width", targetWidth);
+                chart.attr("height", Math.round(targetWidth / aspect));
+            }).trigger("resize");
+
+        };
+        
+        //Function to set scale to Linear
+        function axisToLinear() {
+            scale = "linear";
+            d3.json("world_countries.json", draw);          
+        }
+        
+        //Function to set scale to logarithmic
+        function axisToLog() {
+            scale = "log";
+            d3.json("world_countries.json", draw);          
+        }
+        
+    </script>
+
+    <title></title>
+</head>
+
 <body>
-	<script type="text/javascript">
-		//Get world countries json data an pass it to draw function
-		d3.json("world_countries.json", draw);
-	</script>
-	<div id="main" class="container">
-		<div class="header clearfix">
-			<h1>World Population Evolution</h1>
-		</div>
-		<div class="row presentation">
-			<div class="col-lg-4">
-				The world population is growing and since the middle of last century, has almost tripled. The chart below shows how the world population has evolved since 1800 to 2015, based on the data extracted from <a href="https://docs.google.com/spreadsheets/d/1IbDM8z5XicMIXgr93FPwjgwoTTKMuyLfzU6cQrGZzH8/pub?gid=0" target="_blank"> gapminder dataset</a> and reworked with R.
-			</div>
-			<div class="col-lg-4">
-				The important data here is to pay attention to the extraordinary increase of the population since 1950, and seems to be stabilized nowadays. It is quite possible that the world population to peak in this century, to make way for a decrease, regarding the average curve.
-			</div>
-			<div class="col-lg-4">
-				As you can see, the population axis (Y), needs to be in <a onclick="axisToLog();">logarithmic scale</a>, to show clearly all the countries because of the population evolution of countries like China or India. A version with <a onclick="axisToLinear();">linear scale</a> is available to view the true magnitude of the data.
-			</div>
-		</div>
-		<div class="row plot" id="svg"></div>
-		<footer class="footer">
-			<p>2016 - Alex Trejo - Udacity Data Analyst Nanodegree - Data Visualization with D3</p>
-		</footer>
-	</div>
+    <script type="text/javascript">
+    //Get world countries json data an pass it to draw function
+        d3.json("world_countries.json", draw);
+    </script>
+
+    <div id="main" class="container">
+        <div class="header clearfix">
+            <h1>World Population Evolution</h1>
+        </div>
+
+        <div class="row presentation">
+            <div class="col-lg-4">
+                The world population is growing and since the middle of last century, has almost tripled. The chart below shows how the world population has evolved since 1800 to 2015, based on the data extracted from <a href="https://docs.google.com/spreadsheets/d/1IbDM8z5XicMIXgr93FPwjgwoTTKMuyLfzU6cQrGZzH8/pub?gid=0" target="_blank">gapminder dataset</a> and reworked with R.
+            </div>
+
+            <div class="col-lg-4">
+                The important data here is to pay attention to the extraordinary increase of the population since 1950, and seems to be stabilized nowadays. It is quite possible that the world population to peak in this century, to make way for a decrease, regarding the average curve.
+            </div>
+
+            <div class="col-lg-4">
+                As you can see, the population axis (Y), needs to be in <a onclick="axisToLog();">logarithmic scale</a>, to show clearly all the countries because of the population evolution of countries like China or India. A version with <a onclick="axisToLinear();">linear scale</a> is available to view the true magnitude of the data.
+            </div>
+        </div>
+
+        <div class="row plot" id="svg"></div>
+
+        <footer class="footer">
+            <p>2016 - Alex Trejo - Udacity Data Analyst Nanodegree - Data Visualization with D3</p>
+        </footer>
+    </div>
 </body>
 </html>
