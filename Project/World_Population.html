@@ -16,16 +16,20 @@
 	    <script src="http://d3js.org/d3.v3.min.js"></script>
 	    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
 	    <script src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
+	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	    <style>
 		    @import url(https://fonts.googleapis.com/css?family=Lato:400,300);
 	        body {
 		      font-family: Lato;
-		      text-align: center;
+/* 		      text-align: center; */
 	        }
+/*
 	        h2 {
 	          color: black;
 	          text-align: center;
 	        }
+*/
 	        
 	        svg {
 		        margin: auto;
@@ -89,6 +93,26 @@
 			    marker-start:url(#point);
 			    opacity:0.2;
 			}
+			
+			.header {
+			    padding-bottom: 20px;
+			    border-bottom: 1px solid #e5e5e5;
+			}
+			
+			.presentation {
+				margin-top: 40px;
+				margin-bottom: 40px;
+			}
+			
+			.plot {
+				margin-bottom: 40px;
+			}
+			
+			.footer {
+			    padding-top: 19px;
+			    color: #777;
+			    border-top: 1px solid #e5e5e5;
+			}
 	    </style>
 	    <script type="text/javascript">
 		
@@ -143,7 +167,7 @@
 	        });
 	
 	        y_scale = d3.scale.log()
-	        //var y_scale = d3.scale.linear()
+	        //y_scale = d3.scale.linear()
 	            .range([height + 40, 0])
 	            .domain(y_extent);
 	
@@ -246,12 +270,14 @@
 			"use strict";
 			
 	
+/*
 			d3.select("body")
 				.append("h2")
-				.text("World Population");		
+				.text("World Population");	
+*/	
 			
 			
-			var svg = d3.select("body")
+			var svg = d3.select("#svg")
 	            .append("svg")
 	            .attr("width", width + margin)
 	            .attr("height", height + margin)
@@ -354,6 +380,27 @@
 	<script type="text/javascript">
 		d3.json("world_countries.json", draw);
 	</script>
-	<div id="svg"></div>
+	<div id="main" class="container">
+		<div class="header clearfix">
+			<h1>World Population Evolution</h1>
+		</div>
+		<div class="row presentation">
+			<div class="col-lg-4">
+				Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum. Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.
+			</div>
+			<div class="col-lg-4">
+				Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum. Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.
+			</div>
+			<div class="col-lg-4">
+				Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum. Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.
+			</div>
+		</div>
+		<div class="row plot">			
+			<div id="svg"></div>
+		</div>
+		<footer class="footer">
+			<p>© 2016 Alex Trejo</p>
+		</footer>
+	</div>
 </body>
 </html>
