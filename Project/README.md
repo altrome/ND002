@@ -35,7 +35,7 @@ The final design took me about 30 hours, 15 of them, were used to solve interact
 
 ## Feedback
 
-Some online and offline users gave me some feedback that I used to improve my design in some cases, and in other cases I was not able to implement the provided ideas. Here is a list of them and the action done:
+Some [online](https://plus.google.com/u/0/+AlexTrejo0/posts/4wj6fTMjPKZ) and offline users gave me some feedback that I used to improve my design in some cases, and in other cases I was not able to implement the provided ideas. Here is a list of them and the action done:
 
 * "Looks good, but there is an strange behavior when moving the mouse over a country with line over it." - As I mentioned above, this was one of the main challenges, because of the order of the SVG elements in the chart. Finally I solved it.
 * "Some colors of the map merge with the lines and it's difficult to distinguish the evolution lines." - True... I search for an optimal color combination and played with opacities. 
