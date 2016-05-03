@@ -1,7 +1,7 @@
 # World Population Evolution Visualization
 ### Data Visualization with D3 - Udacity's Data Analyst Nanodegree
 
-* Direct link to the first visualization draft [bl.ocks.org](http://bl.ocks.org/altrome/raw/ae6d6aa352f08ea339300cd38f5a8c9d/)
+* Direct link to the first visualization draft [bl.ocks.org](http://bl.ocks.org/altrome/raw/ae6d6aa352f08ea339300cd38f5a8c9d/). [Github Commit](https://github.com/altrome/ND002/tree/de6646a5bab7de3c87e1021b7e9fe8f432e55894)
 * Direct link to the final visualization [bl.ocks.org](http://bl.ocks.org/altrome/raw/aaf6842a84e58aeec9e8ad2b4c12ae17/)
 
 ## Summary
