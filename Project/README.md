@@ -1,7 +1,8 @@
 # World Population Evolution Visualization
 ### Data Visualization with D3 - Udacity's Data Analyst Nanodegree
 
-Direct link to the visualization [bl.ocks.org](http://bl.ocks.org/altrome/raw/ae6d6aa352f08ea339300cd38f5a8c9d/)
+* Direct link to the first visualization draft [bl.ocks.org](http://bl.ocks.org/altrome/raw/ae6d6aa352f08ea339300cd38f5a8c9d/)
+* Direct link to the final visualization [bl.ocks.org](http://bl.ocks.org/altrome/raw/aaf6842a84e58aeec9e8ad2b4c12ae17/)
 
 ## Summary
 
@@ -39,7 +40,12 @@ Some online and offline users gave me some feedback that I used to improve my de
 * "Looks good, but there is an strange behavior when moving the mouse over a country with line over it." - As I mentioned above, this was one of the main challenges, because of the order of the SVG elements in the chart. Finally I solved it.
 * "Some colors of the map merge with the lines and it's difficult to distinguish the evolution lines." - True... I search for an optimal color combination and played with opacities. 
 * "Can the y-axis update itself when you choose a country such that the y-max value is lowered for smaller populations?" - Good idea, but After search a lot, I was not able to implement it... I'll continue searching
-* "Would be cool if you could pick two or more countries at the same time to compare the populations." - True... but the main objective of the visualization is to show one country evolution and not to compare one with another, but I'll try to test it.
+* "Would be cool if you could pick two or more countries at the same time to compare the populations." - Done! Now, clicking a country or a population evolution line, will fix the selection, and can be compared with another one.
+* "It would be nice if you could perhaps mouse over a line and have it get highlighted and show you what country it corresponds to." - Done! Hovering a country, its population evolution line will be highlighted. In ocean areas, population evolution lines can be selected as well, and the corresponding country will be colored.
+* "The log scale could have a non-scientific rendering of the numbers, to make it easier understandable." - Done! Now formatted with numbers.
+* "Make the sentences a bit shorter and more to the point. I think the info you are transmitting is very good." - Done!
+* "Some countries have thicker border lines than others. However, I did not find a reason for this. I'd try to make them all the same." - The map stroke is the same everywhere, but border lines between countries seems thicker. In retina displays are shown correctly...
+* "I'd reconsider the title. It is a bit clunky to me. A good title can already transmit a lot of information about your visualization. : )" - That's true... 
 
 ## Resources
 

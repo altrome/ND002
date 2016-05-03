@@ -56,8 +56,12 @@
                 border-bottom: 1px solid #e5e5e5;
             }
             
+            h3 {
+	           padding-bottom: 10px;
+            }
+            
             .presentation {
-                margin-top: 40px;
+                margin-top: 20px;
                 margin-bottom: 40px;
             }
             
@@ -77,7 +81,7 @@
             
             .avgbtn {
 	            cursor: pointer;
-	            font-size: 10px;
+	            font-size: 8px;
             }
             
             .evoLine {
@@ -449,7 +453,7 @@
 								
 	                selectedInfo.classed("fixed", !selectedInfo.classed("fixed"));
 				
-				} else if (selection === fixedCountry) {
+				} else if (selection === fixedLine) {
 
 					fixedLine = null;
 					
@@ -547,7 +551,7 @@
             legend.append("text")
                     .text("Hide")
                     .attr("class", "avgbtn")
-                    .attr("x", 200)
+                    .attr("x", 195)
                     .attr("y", 25)
                     .on("click", function(){
 						// Determine if current line is visible
@@ -764,21 +768,33 @@
 
         <div class="row presentation">
             <div class="col-lg-4">
-                The world population is growing and since the middle of last century, has almost tripled. The chart below shows how the world population has evolved since 1800 to 2015, based on the data extracted from <a href="https://docs.google.com/spreadsheets/d/1IbDM8z5XicMIXgr93FPwjgwoTTKMuyLfzU6cQrGZzH8/pub?gid=0" target="_blank">gapminder dataset</a> and reworked with R.
+	            <h3 class="text-center">What?</h3>
+                The world population is growing and since the middle of last century, has almost tripled. Unsustainable overpopulation of our planet is not only a fear, it's a reality. We only have to take a quick look at the chart below, showing how the world population has evolved since 1800 to 2015.
             </div>
 
             <div class="col-lg-4">
-                The important data here is to pay attention to the extraordinary increase of the population since 1950, and seems to be stabilized nowadays. It is quite possible that the world population to peak in this century, to make way for a decrease, regarding the average curve.
+	            <h3 class="text-center">Why?</h3>
+	            China and India are leading this extraordinary growth since 1950. Several countries in African (Central) and Asia (middle east) are growing at ratios nearly three times greater than other countries. In contrast, North American, European, Oceanian and most of South American countries seem to control their growth. 
             </div>
 
             <div class="col-lg-4">
-                As you can see, the population axis (Y), needs to be in <a onclick="axisToLog();">logarithmic scale</a>, to show clearly all the countries because of the population evolution of countries like China or India. A version with <a onclick="axisToLinear();">linear scale</a> is available to view the true magnitude of the data.
+	            <h3 class="text-center">Then?</h3>
+	            Regarding the average blue line as a tendency line, there is a hope that the world population to peak in this century. The governments are aware of the population' growth problem, and they are working in several growth control policies. But there is no doubt that following the same way is not the solution. 
             </div>
         </div>
-
         <div class="row plot" id="svg"></div>
-
-        <footer class="footer">
+		<div class="row">
+			<div class="col-lg-6 col-lg-offset-3 small">
+				<h4 class="text-center">About the chart</h4>
+				<ul>
+					<li>Hovering a country, its population evolution line will be highlighted. In ocean areas, population evolution lines can be selected as well, and the corresponding country will be colored.</li>
+					<li>Clicking a country or a population evolution line, will fix the selection, and can be compared with another one.</li>
+					<li>The chart uses <a onclick="axisToLog();">logarithmic scale</a>, to show clearly all the countries because of the population evolution of countries like China or India. A version with <a onclick="axisToLinear();">linear scale</a> is available to view the true magnitude of the data.</li>
+					<li>Dataset source: <a href="https://docs.google.com/spreadsheets/d/1IbDM8z5XicMIXgr93FPwjgwoTTKMuyLfzU6cQrGZzH8/pub?gid=0" target="_blank">gapminder</a></li>
+				</ul>
+			</div>
+		</div>
+		<footer class="footer">
             <p>2016 - Alex Trejo - Udacity Data Analyst Nanodegree - Data Visualization with D3</p>
         </footer>
     </div>
