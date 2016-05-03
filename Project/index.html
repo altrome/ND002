@@ -24,17 +24,11 @@
             }
 
             .axis {
-              font-size: 0.6em;
-              font-weight: 300;
+              font-size: 10px;
+              text-anchor: end;
             }
 
-            path {
-              fill: none;
-              stroke: black;
-              stroke-width: 2px;
-            }
-                        
-            .tick {
+			.tick {
               fill: none;
               stroke: black;
             }
@@ -50,19 +44,14 @@
             g.x.axis g.tick:nth-of-type(5n+1) text{
                 opacity:1;
             }
-            g.plot line {
-                stroke-width:1;
-                marker-start:url(#point);
-                opacity:0.5;
+            g.y.axis g.tick text {
+                opacity:0;
+            }
+            g.y.axis g.tick:nth-of-type(9n+1) text{
+                opacity:1;
             }
             
-            path.line {
-                stroke-width:1;
-                marker-start:url(#point);
-                opacity:0.2;
-            }
-            
-            .header {
+			.header {
                 padding-bottom: 20px;
                 border-bottom: 1px solid #e5e5e5;
             }
@@ -85,6 +74,81 @@
             .ATF {
                 display: none;
             }
+            
+            .avgbtn {
+	            cursor: pointer;
+	            font-size: 10px;
+            }
+            
+            .evoLine {
+	            fill: none;
+	            stroke: #95a5a6;
+                stroke-width: 1;
+                opacity: 0.2;
+            }
+            
+            .evoLine.dimmed {
+	            opacity: 0.1;
+            }
+            
+            .avgLinePath {
+	            fill: none;
+	            stroke: #2980b9;
+                stroke-width: 2;
+            }
+            
+            .country {
+	            fill: #2c3e50;
+                stroke: #2c3e50;
+                stroke-width: 1;
+                fill-opacity: 0.05;
+                -webkit-transition: fill 0.4s linear;
+			    -moz-transition: fill 0.4s linear;
+			    -o-transition: fill 0.4s linear;
+			    -ms-transition: fill 0.4s linear;
+			    transition: fill 0.4s linear;
+            }
+            
+            .country.current {
+	            fill: #9b59b6;
+                fill-opacity: 0.5;
+                stroke-width: 0;   
+            }
+            
+            .evoLine.current {
+	            stroke: #8e44ad;
+                stroke-width: 2;
+                opacity: 1;
+            }
+            
+            .info.current {
+	            stroke: #8e44ad;
+            }
+            
+            .country.fixed {
+	            fill: #1abc9c;
+	            fill-opacity: 0.5;
+	            stroke-width: 0;
+            }
+            
+            .evoLine.fixed {
+	            stroke: #16a085;
+                stroke-width: 2;
+                opacity: 1;
+            }
+            
+            .info.fixed {
+	            stroke: #16a085;
+            }
+            
+            .numPop, .ctryName {
+	            font-size: 10px;
+            }
+            
+            .ctntName {
+	            font-size: 8px;
+            }
+            
     </style>
     <script type="text/javascript">
     
@@ -113,8 +177,8 @@
         var margin = 75,
             width = 1200 - margin,
             height = 530,
-            radius = 2,
-            format = d3.time.format("%Y"),
+            dateFormat = d3.time.format("%Y"),
+            numFormat = d3.format(",d"),
             x_extent,
             y_extent,
             x_scale,
@@ -123,7 +187,8 @@
             y_axis,
             scale = "log",
             map,
-            legend;
+            evoLine,
+            fixedCountry;
         
         //Function to plot all the countries population lines
         function plotLines(data) {
@@ -161,13 +226,12 @@
                 .append("text")
                 .attr("x", width)
                 .attr("dy", "-.5em")
-                .style("font-size", "14px")
-                .style("text-anchor", "end")
                 .text("Year");
 
             y_axis = d3.svg.axis()
                 .scale(y_scale)
-                .orient("left");
+                .orient("left")
+                .tickFormat(numFormat);
 
             d3.select("svg")
                 .append('g')
@@ -178,8 +242,6 @@
                 .attr("transform", "rotate(-90)")
                 .attr("y", 6)
                 .attr("dy", ".75em")
-                .style("font-size", "14px")
-                .style("text-anchor", "end")
                 .text("Population (" + scale + ")");
             
             //Aggregate countries
@@ -206,7 +268,7 @@
             }
             
             //nesting countries by country name  
-            var countries = d3.nest()
+            var evoData = d3.nest()
                .key(function(d) {
                   return d['Country'];
                })
@@ -214,11 +276,11 @@
                .entries(data);
             
             //plotting country lines and adding data attributes to use later on interaction
-            var country = d3.select("svg").selectAll(".country")
-                .data(countries)
+            evoLine = d3.select("svg").selectAll(".evoLine")
+                .data(evoData)
                 .enter()
                 .append("g")
-                .attr("class", "country")
+                .attr("class", "evoLine")
                 .attr("data-continent", function(d) {return d.values.continent; })
                 .attr("data-countryname", function(d) {return d.key; })
                 .attr("data-population", function(d) { return JSON.stringify(d.values.yearPopulation); })
@@ -230,13 +292,10 @@
                 .x(function(d) { return x_scale(d.year); })
                 .y(function(d) { return y_scale(d.population); });  
             
-            //appending lines to country
-            country.append("path")  
+            //appending lines to evoLine
+            evoLine.append("path")  
                 .attr("class", "line")
-                .attr("d", function(d) {return line(d.values.yearPopulation); })
-                .style("stroke", "#95a5a6" )
-                .style('stroke-width', 0.5)
-                .style('opacity', 0.4);
+                .attr("d", function(d) {return line(d.values.yearPopulation); });
             
             //Average population by year  
             var avgYear = d3.nest()
@@ -258,13 +317,171 @@
             
             d3.select("svg")
                 .append("g")
-                .attr("class", "avgLine")
+                .attr("id", "avgLine")
                 .append("path")
-                .attr("class", "linePath")
-                .attr("d", avgLine(avgYear))
-                .style("stroke", "#2980b9" )
-                .style('stroke-width', 2);
+                .attr("class", "avgLinePath")
+                .attr("d", avgLine(avgYear));
+            
+            evoLine.on("mouseover", function(){
+            
+                var selectedEvo = d3.select(this);
+				
+				if (selectedEvo.classed("fixed")) {
+					return;
+				}
+				
+				//dim all the lines 
+                d3.selectAll(".evoLine").classed("dimmed", true);  
                 
+                //Highlighting hovered country
+                d3.select(this)
+                	.classed("current", true)
+                    .moveToFront()
+                    .transition()
+                    .duration(500);  
+                
+                //getting the hovered country ref and its data associated
+                var selection = this.getAttribute('id');
+                var countryName = this.getAttribute("data-countryname");
+                var continent = this.getAttribute("data-continent");
+                var population = JSON.parse(this.getAttribute("data-population"));
+                var lastPopulation = population[Object.keys(population)[Object.keys(population).length - 1]]['population'];
+                
+                //Highlighting country population evolution line
+                d3.select("[data-ref=" + selection + "]")
+                    .classed("current", true)
+                    .moveToFront()
+                    .select('path')
+                    .transition()
+                    .duration(500);
+                
+                var yInfo = y_scale(lastPopulation);
+                if (!d3.select(".info").empty()) {
+	                var infoBBox = d3.select(".info").node().getBBox();
+	                if ((infoBBox["y"] > y_scale(lastPopulation)) && ((infoBBox["y"]-infoBBox["height"]) < y_scale(lastPopulation))) {
+		                yInfo = y_scale(lastPopulation)-infoBBox["height"];
+	                } else if ((infoBBox["y"] < y_scale(lastPopulation)) && ((infoBBox["y"]+infoBBox["height"]) > y_scale(lastPopulation))) {
+		                yInfo = y_scale(lastPopulation)+infoBBox["height"];
+	                }
+                }
+                
+                var currentInfo = d3.select("svg")
+	                .append('g')
+	                .classed('current info', true);
+                            
+                currentInfo.append("text")
+                    .attr("class", "numPop")
+                    .text(numFormat(lastPopulation))
+                    .attr("x", width + 3)
+                    .attr("y", yInfo + 10);
+                
+                currentInfo.append("text")
+                    .attr("class", "ctryName")
+                    .text(countryName)
+                    .attr("x", width + 3)
+                    .attr("y", yInfo + 20);
+                
+                currentInfo.append("text")
+                    .attr("class", "ctntName")
+                    .text(continent)
+                    .attr("x", width + 3)
+                    .attr("y", yInfo + 28);
+                        
+            });
+            
+            evoLine.on("mouseout", function(){
+                
+                var selectedEvo = d3.select(this);
+				
+				if (selectedEvo.classed("fixed")) {
+					return;
+				}
+                
+                var selection = this.getAttribute('id');
+                
+                //Changing the order of map
+                d3.select(".evoLine").moveToFront();
+                
+                //Returning all elements to original state
+                d3.selectAll(".evoLine").classed("dimmed", false);
+                
+                selectedEvo
+                	.classed("current", false)
+                	.moveToBack()
+                    .transition()
+                    .duration(500);
+                                
+                d3.select("[data-ref=" + selection + "]")
+                	.classed("current", false)
+                    .moveToBack()
+                    .select('path')
+                    .transition()
+                    .duration(500);
+                
+                d3.select("[data-ref=" + selection + "]").moveToBack();
+                
+                //remove legend
+                d3.selectAll(".info.current").remove();
+                
+               
+            });
+			
+			evoLine.on("click", function(){
+	            	            
+	            var selection = this.getAttribute("id");
+				
+				if (d3.selectAll(".fixed").empty()) {
+
+	                fixedLine = selection;
+	                
+	                var selectedEvo = d3.select(this);
+	                
+	                d3.selectAll(".current").classed("current", false);
+					
+		            selectedEvo.classed("fixed", !selectedEvo.classed("fixed"));
+	                
+	                //Highlighting country population evolution line
+	                var selectedCountry = d3.select("[data-ref=" + selection + "]");
+	
+	                selectedCountry.classed("fixed", !selectedCountry.classed("fixed"));
+					
+					var selectedInfo = d3.select(".info");
+								
+	                selectedInfo.classed("fixed", !selectedInfo.classed("fixed"));
+				
+				} else if (selection === fixedCountry) {
+
+					fixedLine = null;
+					
+	                d3.selectAll(".fixed").classed("fixed", false).classed("current", true);
+					
+				} else {
+
+					fixedLine = selection;
+					
+					d3.selectAll("g.info.fixed").remove();
+				
+	                d3.selectAll(".fixed").classed("fixed", false);
+	                
+	                var selectedEvo = d3.select(this);
+	                
+	                d3.selectAll(".current").classed("current", false);
+					
+		            selectedEvo.classed("fixed", !selectedEvo.classed("fixed"));
+					
+					//Highlighting country population evolution line
+	                var selectedCountry = d3.select("[data-ref=" + selection + "]");
+	
+	                selectedCountry.classed("fixed", !selectedCountry.classed("fixed"));
+					
+					var selectedInfo = d3.select(".info");
+								
+	                selectedInfo.classed("fixed", !selectedInfo.classed("fixed"));
+				}	
+		
+	        });
+
+               
         }
         
         //function to plot the map and then call plotlines function
@@ -294,7 +511,7 @@
             d3.tsv("World_population.tsv", function(d) {
 
                 d['Population'] = +d["Population"];
-                d['Year'] = format.parse(d['Year']);
+                d['Year'] = dateFormat.parse(d['Year']);
                 
                 return d;
             }, plotLines);
@@ -304,128 +521,206 @@
                 .data(geo_data.features)
                 .enter()
                 .append('path')
+                .classed('country', true)
                 .attr('d', path)
-                .attr("class",function(d){ return d.id})
-                .style('fill', '#ecf0f1')
-                .style('stroke', '#2c3e50')
-                .style('stroke-width', 1)
-                .style('fill-opacity', 0);
+                .attr("data-ref",function(d){ return d.id});
             
             //Create a legend group
-            legend =  d3.select("svg")
+            var legend =  d3.select("svg")
                 .append('g')
                 .attr('class', 'legend');
             
             //Append the average blue line
             legend.append("line")
-                .attr("x1", 550)
-                .attr("y1", 520)
-                .attr("x2", 580)
-                .attr("y2", 520)
-                .style("stroke", "#2980b9" )
-                .style('stroke-width', 2);
+                .attr("x1", 110)
+                .attr("y1", 20)
+                .attr("x2", 130)
+                .attr("y2", 20)
+                .classed("avgLinePath", true);
             
             //Append the average line text
             legend.append("text")
-                .text("Average Population Evolution")
-                .attr("x", 590)
-                .attr("y", 525);
+                .text("Average")
+                .attr("x", 140)
+                .attr("y", 25);
+            
+            legend.append("text")
+                    .text("Hide")
+                    .attr("class", "avgbtn")
+                    .attr("x", 200)
+                    .attr("y", 25)
+                    .on("click", function(){
+						// Determine if current line is visible
+						var active   = avgLine.active ? false : true ,
+							newOpacity = active ? 0 : 1,
+							newText = active ? "Show" : "Hide";
+						// Hide or show the elements
+						d3.select("#avgLine").style("opacity", newOpacity);
+						// Update whether or not the elements are active
+						avgLine.active = active;
+						d3.select(this).text(newText);
+					})
             
             //interacting with map on mouse over            
             map.on("mouseover", function(){
-                //console.log(this);
                 
-                d3.selectAll(".line")
-                    .style('opacity', 0.2);  
+                var selectedCountry = d3.select(this);
+				
+				if (selectedCountry.classed("fixed")) {
+					return;
+				}
+				
+				//dim all the lines 
+                d3.selectAll(".evoLine").classed("dimmed", true);  
                 
                 //Highlighting hovered country
                 d3.select(this)
+                	.classed("current", true)
                     .moveToFront()
                     .transition()
-                    .duration(500)
-                    .style('fill', "#9b59b6")
-                    .style('fill-opacity', 0.5)
-                    .style("stroke", "#8e44ad");  
+                    .duration(500);  
                 
                 //getting the hovered country ref and its data associated
-                var selection = this.getAttribute("class");
+                var selection = this.getAttribute("data-ref");
                 var countryName = d3.select('#' + selection).attr("data-countryname");
                 var continent = d3.select('#' + selection).attr("data-continent");
                 var population = JSON.parse(d3.select('#' + selection).attr("data-population"));
-                
                 var lastPopulation = population[Object.keys(population)[Object.keys(population).length - 1]]['population'];
                 
                 //Highlighting country population evolution line
                 d3.select('#' + selection)
+                    .classed("current", true)
                     .moveToFront()
                     .select('path')
                     .transition()
-                    .duration(500)
-                    .style('stroke', '#e74c3c')
-                    .style('stroke-width', 2)
-                    .style('opacity', 1);
+                    .duration(500);
                 
-                //Showing legend corresponding to highlighted country
-                legend.append("line")
-                    .attr("class", "current")
-                    .attr("x1", 550)
-                    .attr("y1", 540)
-                    .attr("x2", 580)
-                    .attr("y2", 540)
-                    .style("stroke", "#e74c3c" )
-                    .style('stroke-width', 2)
-                    .style('opacity', 1);
+                var yInfo = y_scale(lastPopulation);
+                if (!d3.select(".info").empty()) {
+	                var infoBBox = d3.select(".info").node().getBBox();
+	                if ((infoBBox["y"] > y_scale(lastPopulation)) && ((infoBBox["y"]-infoBBox["height"]) < y_scale(lastPopulation))) {
+		                yInfo = y_scale(lastPopulation)-infoBBox["height"];
+	                } else if ((infoBBox["y"] < y_scale(lastPopulation)) && ((infoBBox["y"]+infoBBox["height"]) > y_scale(lastPopulation))) {
+		                yInfo = y_scale(lastPopulation)+infoBBox["height"];
+	                }
+                }
                 
-                legend.append("text")
-                    .attr("class", "current")
-                    .text(countryName + " (" + continent + ") Population Evolution ")
-                    .attr("x", 590)
-                    .attr("y", 545);
+                var currentInfo = d3.select("svg")
+	                .append('g')
+	                .classed('current info', true);
+                            
+                currentInfo.append("text")
+                    .attr("class", "numPop")
+                    .text(numFormat(lastPopulation))
+                    .attr("x", width + 3)
+                    .attr("y", yInfo + 10);
                 
-                legend.append("text")
-                    .attr("class", "current")
-                    .text(" 2015 Population - " + lastPopulation)
-                    .attr("x", 590)
-                    .attr("y", 565);
+                currentInfo.append("text")
+                    .attr("class", "ctryName")
+                    .text(countryName)
+                    .attr("x", width + 3)
+                    .attr("y", yInfo + 20);
+                
+                currentInfo.append("text")
+                    .attr("class", "ctntName")
+                    .text(continent)
+                    .attr("x", width + 3)
+                    .attr("y", yInfo + 28);
                         
             });
             
             //interacting with map on mouse out
             map.on("mouseout", function(){
                 
+                var selectedCountry = d3.select(this);
+				
+				if (selectedCountry.classed("fixed")) {
+					return;
+				}
+                
+                var selection = this.getAttribute("data-ref");
+                
                 //Changing the order of map
                 d3.select(".map").moveToFront();
                 
                 //Returning all elements to original state
-                d3.selectAll(".line")
-                    .style('opacity', 0.5);  
+                d3.selectAll(".evoLine").classed("dimmed", false);
                 
-                d3.select(this)
-                    .moveToBack()
+                selectedCountry
+                	.classed("current", false)
+                	.moveToBack()
                     .transition()
-                    .duration(500)
-                    .style('fill', '#ecf0f1')
-                    .style('stroke', '#2c3e50')
-                    .style('stroke-width', 0.5)
-                    .style('fill-opacity', 0);
-                
-                var selection = this.getAttribute("class");
+                    .duration(500);
                                 
                 d3.select('#' + selection)
+                	.classed("current", false)
                     .moveToBack()
                     .select('path')
                     .transition()
-                    .duration(500)
-                    .style('stroke', 'grey')
-                    .style('opacity', 0.2)
-                    .style('stroke-width', 1);
+                    .duration(500);
                 
                 d3.select('#' + selection).moveToBack();
                 
                 //remove legend
-                d3.selectAll(".current").remove();
+                d3.selectAll(".info.current").remove();
+                
                
             });
+            
+            map.on("click", function(){
+	            	            
+	            var selection = this.getAttribute("data-ref");
+				
+				if (d3.selectAll(".fixed").empty()) {
+
+	                fixedCountry = selection;
+	                
+	                var selectedCountry = d3.select(this);
+	                
+	                d3.selectAll(".current").classed("current", false);
+					
+		            selectedCountry.classed("fixed", !selectedCountry.classed("fixed"));
+	                
+	                //Highlighting country population evolution line
+	                var selectedLine = d3.select('#' + selection);
+	
+	                selectedLine.classed("fixed", !selectedLine.classed("fixed"));
+					
+					var selectedInfo = d3.select(".info");
+								
+	                selectedInfo.classed("fixed", !selectedInfo.classed("fixed"));
+				
+				} else if (selection === fixedCountry) {
+
+					fixedCountry = null;
+					
+	                d3.selectAll(".fixed").classed("fixed", false).classed("current", true);
+					
+				} else {
+
+					fixedCountry = selection;
+					
+					d3.selectAll("g.info.fixed").remove();
+				
+	                d3.selectAll(".fixed").classed("fixed", false);
+	                
+	                var selectedCountry = d3.select(this);
+	                
+	                d3.selectAll(".current").classed("current", false);
+					
+		            selectedCountry.classed("fixed", !selectedCountry.classed("fixed"));
+					
+					//Highlighting country population evolution line
+	                var selectedLine = d3.select('#' + selection);
+	
+	                selectedLine.classed("fixed", !selectedLine.classed("fixed"));
+					
+					var selectedInfo = d3.select(".info");
+								
+	                selectedInfo.classed("fixed", !selectedInfo.classed("fixed"));
+				}	
+		
+	        });
             
             //Make map responsive
             var chart = $("#chart"),
@@ -464,7 +759,7 @@
 
     <div id="main" class="container">
         <div class="header clearfix">
-            <h1>World Population Evolution</h1>
+            <h1>World Population: Hope or Apocalypse?</h1>
         </div>
 
         <div class="row presentation">

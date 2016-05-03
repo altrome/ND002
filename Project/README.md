@@ -51,3 +51,5 @@ https://en.wikipedia.org/wiki/List_of_sovereign_states_and_dependent_territories
 https://vec.wikipedia.org/wiki/ISO_3166-1
 https://github.com/mledoze/countries
 https://docs.google.com/spreadsheets/d/1IbDM8z5XicMIXgr93FPwjgwoTTKMuyLfzU6cQrGZzH8/pub?gid=0
+http://bl.ocks.org/d3noob/5d621a60e2d1d02086bf
+http://jaketrent.com/post/d3-class-operations/
