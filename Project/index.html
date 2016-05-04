@@ -326,6 +326,8 @@
                 .attr("class", "avgLinePath")
                 .attr("d", avgLine(avgYear));
             
+            //Interaction with population lines
+            //Hovering the line will color the line, the country and show the legend
             evoLine.on("mouseover", function(){
             
                 var selectedEvo = d3.select(this);
@@ -369,6 +371,7 @@
 	                }
                 }
                 
+                //Create g element to show the text associated to the line
                 var currentInfo = d3.select("svg")
 	                .append('g')
 	                .classed('current info', true);
@@ -393,6 +396,7 @@
                         
             });
             
+            //On mouseout event, the information colored will return to the original state
             evoLine.on("mouseout", function(){
                 
                 var selectedEvo = d3.select(this);
@@ -430,6 +434,7 @@
                
             });
 			
+			//Clicking the line will fix the line, the country and the releted information
 			evoLine.on("click", function(){
 	            	            
 	            var selection = this.getAttribute("id");
@@ -548,6 +553,7 @@
                 .attr("x", 140)
                 .attr("y", 25);
             
+            //Append a text button to hide/show the average line
             legend.append("text")
                     .text("Hide")
                     .attr("class", "avgbtn")
@@ -565,7 +571,7 @@
 						d3.select(this).text(newText);
 					})
             
-            //interacting with map on mouse over            
+            //Hovering the country will color the line, the country and show the legend            
             map.on("mouseover", function(){
                 
                 var selectedCountry = d3.select(this);
@@ -609,6 +615,7 @@
 	                }
                 }
                 
+                //Create g element to show the text associated to the country
                 var currentInfo = d3.select("svg")
 	                .append('g')
 	                .classed('current info', true);
@@ -633,7 +640,7 @@
                         
             });
             
-            //interacting with map on mouse out
+            //On mouseout event, the information colored will return to the original state
             map.on("mouseout", function(){
                 
                 var selectedCountry = d3.select(this);
@@ -671,6 +678,7 @@
                
             });
             
+            //Clicking the country will fix the line, the country and the releted information
             map.on("click", function(){
 	            	            
 	            var selection = this.getAttribute("data-ref");
@@ -795,7 +803,7 @@
 			</div>
 		</div>
 		<footer class="footer">
-            <p>2016 - Alex Trejo - Udacity Data Analyst Nanodegree - Data Visualization with D3</p>
+            <p>2016 - <a href="https://profiles.udacity.com/u/alextrejo">Alex Trejo</a> - Udacity Data Analyst Nanodegree - Data Visualization with D3</p>
         </footer>
     </div>
 </body>
